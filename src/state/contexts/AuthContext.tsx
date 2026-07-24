@@ -8,6 +8,7 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {defineApi, reDefine} from '../../api';
+import {initDeviceMetadata} from '../../api/api/defineApi';
 import {IUserEntity} from 'oneentry/dist/users/usersInterfaces';
 import {LanguageContext} from './LanguageContext';
 import {useAppDispatch} from '../hooks';
@@ -29,6 +30,7 @@ type ContextProps = {
   user?: IUserEntity;
   authenticate: () => void;
   logOutUser: () => void;
+  validateToken: () => Promise<void>;
 };
 
 /**
@@ -39,6 +41,7 @@ export const AuthContext = createContext<ContextProps>({
   isLoading: false,
   authenticate: () => {},
   logOutUser: () => {},
+  validateToken: async () => {},
 });
 
 type Props = {
@@ -113,10 +116,12 @@ export const AuthProvider = ({children}: Props) => {
    * Initial user render
    */
   const onInit = async () => {
+    await initDeviceMetadata();
     const refresh = await AsyncStorage.getItem('refresh-token');
-    reDefine(refresh || '', activeLanguage);
+    const providerMarker = await AsyncStorage.getItem('provider-marker');
+    reDefine(refresh || '', providerMarker || 'email', activeLanguage);
 
-    await validateToken();
+    setTimeout(validateToken, 1000);
   };
 
   /**
@@ -129,6 +134,7 @@ export const AuthProvider = ({children}: Props) => {
       setErrorPage(e?.pageData);
     }
     await AsyncStorage.setItem('refresh-token', '');
+    await AsyncStorage.setItem('provider-marker', '');
     resetQuery();
     dispatch(resetUserState());
     setIsLoading(false);
@@ -141,12 +147,19 @@ export const AuthProvider = ({children}: Props) => {
     try {
       setIsLoading(true);
       const refreshToken = await AsyncStorage.getItem('refresh-token');
+      const providerMarker = await AsyncStorage.getItem('provider-marker');
       const response = await defineApi.AuthProvider.logout(
-        'email',
+        providerMarker || 'email',
         refreshToken || '',
       );
-      // @ts-ignore
-      if (response.statusCode >= 400) throw new Error(response.message);
+      if (
+        typeof response === 'object' &&
+        response !== null &&
+        'statusCode' in response &&
+        (response as IError).statusCode >= 400
+      ) {
+        throw new Error((response as IError).message);
+      }
     } catch (error) {
       console.error('log out error', error);
     } finally {
@@ -161,6 +174,7 @@ export const AuthProvider = ({children}: Props) => {
   const validateToken = async () => {
     try {
       const res = await getUser();
+      console.log('getUser response:', res);
       if (res?.error) {
         throw res.error;
       }
@@ -205,6 +219,7 @@ export const AuthProvider = ({children}: Props) => {
     logOutUser,
     errorPage,
     authenticate: () => setRefetch(!refetch),
+    validateToken,
     signInUser,
   };
 
@@ -273,8 +288,11 @@ export const signInUser = async (
       throw new Error((result as IError)?.message);
     }
 
-    if (result.accessToken) {
-      await AsyncStorage.setItem('refresh-token', result.refreshToken);
+    if ('accessToken' in result && result.accessToken) {
+      // auth() places both tokens in state and calls saveFunction, which writes
+      // refresh-token to AsyncStorage. Only providerMarker needs to be persisted
+      // for the SDK's proactive refresh on the next session.
+      await AsyncStorage.setItem('provider-marker', provider);
       methodResult.isSuccess = true;
     } else {
       methodResult.error = 'No access token';
@@ -305,6 +323,7 @@ export const signInUser = async (
 export const signUpUser = async (
   data: ISignUpData,
   password: string,
+  marker?: string,
 ): Promise<MethodResult> => {
   let methodResult = {
     isActivation: false,
@@ -313,7 +332,7 @@ export const signUpUser = async (
   };
   try {
     const registration = await defineApi.AuthProvider.signUp(
-      'email',
+      marker || 'email',
       data,
       'en_US',
     );
@@ -322,10 +341,15 @@ export const signUpUser = async (
     }
 
     // If no activation required, log in the user automatically
-    if (registration.isActive) {
-      const result = await signInUser(registration.identifier, password);
+    if ('isActive' in registration && registration.isActive) {
+      const result = await signInUser(
+        (registration as any).identifier,
+        password,
+      );
       return result;
     } else {
+      // Save provider marker for later activation
+      await AsyncStorage.setItem('provider-marker', marker || 'email');
       methodResult.isActivation = true;
     }
   } catch (e: any) {

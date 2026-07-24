@@ -15,6 +15,7 @@ const MainNavigator: React.FC<Props> = () => {
   return (
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator
+        id={undefined}
         initialRouteName={'Drawer'}
         screenOptions={{headerShown: false}}>
         <Stack.Screen name={'Drawer'} component={DrawerNavigator} />

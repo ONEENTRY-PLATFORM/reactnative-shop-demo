@@ -18,7 +18,7 @@ const UseGetProductsByIds = ({ids}: Props) => {
       const res = await Promise.all(
         ids.map(async id => {
           const item = await defineApi.Products.getProductById(id);
-          return item?.id ? item : undefined;
+          return 'id' in item && item.id ? item : undefined;
         }),
       );
       // @ts-ignore

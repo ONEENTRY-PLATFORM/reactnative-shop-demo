@@ -28,7 +28,7 @@ export const FeaturedObjectItem = ({
   const items = useAppSelector(state => getCartItemById(state, product.id));
   const navigation = useAppNavigation();
 
-  const productCurrency = product?.attributeValues?.currency?.value;
+  const productCurrency = product?.attributeValues?.currency?.value as string;
 
   useEffect(() => {
     setAttributes(product.attributeValues);
@@ -83,8 +83,8 @@ export const FeaturedObjectItem = ({
               height={'full'}
               width={'full'}
               uri={
-                attributes?.pic?.value?.downloadLink ||
-                attributes?.pic?.value[0]?.downloadLink
+                (attributes?.pic?.value as any)?.downloadLink ||
+                (attributes?.pic?.value as any[])?.[0]?.downloadLink
               }
             />
           </View>
@@ -100,7 +100,7 @@ export const FeaturedObjectItem = ({
             currency={productCurrency}
             price={product?.price}
             size={'sm'}
-            sale={product?.attributeValues?.sale?.value}
+            sale={product?.attributeValues?.sale?.value as number}
           />
           {items ? (
             <AddToCartCounter

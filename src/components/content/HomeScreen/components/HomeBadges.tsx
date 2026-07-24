@@ -22,17 +22,19 @@ const HomeBadges: React.FC<Props> = ({
   attributes,
   loading,
 }: Props): React.ReactElement => {
-  const badges = useMemo<[]>(() => {
-    return attributes?.badges?.value?.map((badge: IListTitle) => {
-      if (!badge?.title || !badge?.value) {
-        return;
-      }
-      const badgeToPush = {
-        label: badge.title,
-        value: badge.value,
-      };
-      return badgeToPush;
-    });
+  const badges = useMemo<any[]>(() => {
+    return (attributes?.badges?.value as IListTitle[])?.map(
+      (badge: IListTitle) => {
+        if (!badge?.title || !badge?.value) {
+          return;
+        }
+        const badgeToPush = {
+          label: badge.title,
+          value: badge.value,
+        };
+        return badgeToPush;
+      },
+    );
   }, [attributes]);
 
   const onChangeActiveBadge = (value: number) => {

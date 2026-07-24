@@ -5,7 +5,7 @@ import {
   IPositionBlock,
 } from 'oneentry/dist/pages/pagesInterfaces';
 import {IAuthProvidersEntity} from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import {IFormsEntity} from 'oneentry/dist/forms/formsInterfaces';
+import {IFormAttribute, IFormsEntity} from 'oneentry/dist/forms/formsInterfaces';
 import {IUserEntity} from 'oneentry/dist/users/usersInterfaces';
 import {
   IAccountsEntity,
@@ -15,13 +15,12 @@ import {
   IOrdersByMarkerEntity,
   IOrdersEntity,
 } from 'oneentry/dist/orders/ordersInterfaces';
-import {IAttributes, IError} from 'oneentry/dist/base/utils';
+import {IError} from 'oneentry/dist/base/utils';
 import {IAttributesSetsEntity} from 'oneentry/dist/attribute-sets/attributeSetsInterfaces';
 import {IBlockEntity} from 'oneentry/dist/blocks/blocksInterfaces';
 import {
   IFilterParams,
   IProductBlock,
-  IProductEntity,
   IProductsEntity,
   IProductsResponse,
 } from 'oneentry/dist/products/productsInterfaces';
@@ -67,7 +66,7 @@ export const RTKApi = createApi({
           }
 
           result.attributes.sort(
-            (a: IAttributes, b: IAttributes) => a.position - b.position,
+            (a: IFormAttribute, b: IFormAttribute) => a.position - b.position,
           );
           return {data: result as IFormsEntity};
         } catch (e: any) {
@@ -108,7 +107,7 @@ export const RTKApi = createApi({
     getOrderStorageByMarker: build.query<IOrdersEntity, {marker: string}>({
       queryFn: async ({marker}) => {
         try {
-          const result = await defineApi.Orders.getOrderByMarker(marker);
+          const result = await defineApi.Orders.getOrdersStorageByMarker(marker);
 
           if (isError(result)) {
             throw new Error(result?.message);
@@ -152,15 +151,17 @@ export const RTKApi = createApi({
       IAttributesSetsEntity[],
       {setMarker: string; langCode?: string}
     >({
-      queryFn: async ({setMarker}) => {
+      queryFn: async ({setMarker, langCode}) => {
         try {
-          const result =
-            await defineApi.AttributesSets.getAttributesByMarker(setMarker);
+          const result = await defineApi.AttributesSets.getAttributesByMarker(
+            setMarker,
+            langCode || 'en_US',
+          );
 
           if (isError(result)) {
             throw new Error(result?.message);
           }
-          return {data: result};
+          return {data: result as unknown as IAttributesSetsEntity[]};
         } catch (e: any) {
           return {error: e.message};
         }
@@ -168,14 +169,15 @@ export const RTKApi = createApi({
     }),
     getSingleAttributeInSetByMarker: build.query<
       IAttributesSetsEntity,
-      {setMarker: string; attributeMarker: string}
+      {setMarker: string; attributeMarker: string; langCode?: string}
     >({
-      queryFn: async ({setMarker, attributeMarker}) => {
+      queryFn: async ({setMarker, attributeMarker, langCode}) => {
         try {
           const result =
             await defineApi.AttributesSets.getSingleAttributeByMarkerSet(
               setMarker,
               attributeMarker,
+              langCode || 'en_US',
             );
 
           if (isError(result)) {
@@ -370,7 +372,7 @@ export const RTKApi = createApi({
         if (!products || (products as IError).statusCode >= 400) {
           return {error: 'Data error'};
         } else {
-          return {data: products as IProductEntity[]};
+          return {data: products as IProductsEntity[]};
         }
       },
     }),
@@ -416,7 +418,6 @@ export const RTKApi = createApi({
                 limit,
                 sortOrder,
                 sortKey,
-                statusMarker: available ? 'in_stock' : undefined,
               },
             );
           } else {
@@ -425,7 +426,6 @@ export const RTKApi = createApi({
               sortKey: sortKey,
               offset,
               limit,
-              statusMarker: available ? 'in_stock' : undefined,
             });
           }
 
@@ -437,7 +437,7 @@ export const RTKApi = createApi({
             return res.isVisible;
           });
 
-          return {data: products as IProductEntity[]};
+          return {data: products as IProductsEntity[]};
         } catch (e: any) {
           return {error: e.message};
         }

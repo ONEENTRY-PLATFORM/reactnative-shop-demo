@@ -84,7 +84,7 @@ const ProductContent: React.FC<Props> = ({
         <CustomImage
           width={'full'}
           height={280}
-          uri={product?.attributeValues?.pic?.value?.downloadLink}
+          uri={(product?.attributeValues?.pic?.value as any)?.downloadLink}
         />
       </View>
       <View
@@ -98,7 +98,7 @@ const ProductContent: React.FC<Props> = ({
             </Paragraph>
             <Units
               full={10}
-              part={product?.attributeValues?.units_product?.value}
+              part={product?.attributeValues?.units_product?.value as number}
             />
           </View>
           <View className={'flex-row items-center'} style={{gap: 10}}>
@@ -111,15 +111,18 @@ const ProductContent: React.FC<Props> = ({
         <ProductStatus
           price={product?.price}
           status={product?.statusIdentifier}
-          currency={product?.attributeValues?.currency?.value}
-          sale={product?.attributeValues?.sale?.value}
+          currency={product?.attributeValues?.currency?.value as string}
+          sale={product?.attributeValues?.sale?.value as number}
         />
 
         {/*Other variations of this product*/}
         <ProductOptions mainProduct={product} />
 
         <Paragraph size={12} color="lightGray">
-          {product?.attributeValues?.description?.value[0]?.plainValue}
+          {
+            (product?.attributeValues?.description?.value as any[])?.[0]
+              ?.plainValue
+          }
         </Paragraph>
 
         <View className={'flex-row items-center gap-x-4'}>
@@ -127,7 +130,7 @@ const ProductContent: React.FC<Props> = ({
             loading={isLoading}
             inStock={product?.statusIdentifier === 'in_stock'}
             id={product?.id}
-            currency={product?.attributeValues?.currency?.value}
+            currency={product?.attributeValues?.currency?.value as string}
           />
           <View>
             {product?.id && <FavoritesButton id={product?.id} size={'xl'} />}

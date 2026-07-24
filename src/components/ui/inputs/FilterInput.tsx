@@ -31,7 +31,7 @@ const FilterInput: React.FC<Props> = ({operator, title}) => {
         attributeMarker: 'price',
         conditionMarker: 'mth',
         conditionValue: priceFromPrevious,
-        pageUrl: ['shop'],
+        pageUrls: ['shop'],
       };
       dispatch(removeFilter(filter));
     }
@@ -40,7 +40,7 @@ const FilterInput: React.FC<Props> = ({operator, title}) => {
         attributeMarker: 'price',
         conditionMarker: 'lth',
         conditionValue: priceToPrevious,
-        pageUrl: ['shop'],
+        pageUrls: ['shop'],
       };
       dispatch(removeFilter(filter));
     }
@@ -48,7 +48,7 @@ const FilterInput: React.FC<Props> = ({operator, title}) => {
       attributeMarker: 'price',
       conditionMarker: operator === 'to' ? 'lth' : 'mth',
       conditionValue: value,
-      pageUrl: ['shop'],
+      pageUrls: ['shop'],
     };
     dispatch(setPriceFilterActive({value, operator}));
 

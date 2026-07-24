@@ -34,8 +34,9 @@ const OrderItem: React.FC<Props> = ({
           height={60}
           style={{borderRadius: 10}}
           uri={
-            product?.attributeValues?.pic?.value[0]?.downloadLink ||
-            product?.attributeValues?.pic?.value?.downloadLink
+            (product?.attributeValues?.pic?.value as any[])?.[0]
+              ?.downloadLink ||
+            (product?.attributeValues?.pic?.value as any)?.downloadLink
           }
         />
       </View>
@@ -48,7 +49,7 @@ const OrderItem: React.FC<Props> = ({
             price={product?.price}
             size={'sm'}
             currency={currency || '$'}
-            sale={product?.attributeValues?.sale?.value}
+            sale={product?.attributeValues?.sale?.value as number}
           />
         </View>
         {isActions && (

@@ -3,12 +3,12 @@ import React, {useState} from 'react';
 import {NavigationProps} from '../../navigation/types/types';
 import {Screen} from '../../components/ui/templates/Screen';
 import TopSpacerV2 from '../../components/ui/space/TopSpacerV2';
+import {useGetShopBlocks} from '../../hooks/content/ShopScreen/useGetShopBlocks';
 import {
-  CatalogBadges,
   ShopProductsList,
   SortFilterMenu,
 } from '../../components/content/ShopScreen';
-import {useGetShopBlocks} from '../../hooks/content/ShopScreen/useGetShopBlocks';
+import CatalogBadges from '../../components/shared/CatalogBadges';
 
 /**
  * ShopScreen component represents the main shopping screen.
@@ -20,7 +20,7 @@ import {useGetShopBlocks} from '../../hooks/content/ShopScreen/useGetShopBlocks'
 export const ShopScreen: React.FC<NavigationProps> = ({route}) => {
   const [sortOption, setSortOption] = useState<'low' | 'high' | undefined>();
 
-  const pageUrl = route.params.pageUrl;
+  const pageUrl = route?.params?.pageUrl;
 
   // Fetch shop blocks (e.g., sort block)
   const {sortBlock} = useGetShopBlocks({pageUrl});

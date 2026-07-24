@@ -95,7 +95,9 @@ const DrawerNavigator: React.FC<Props> = () => {
   const showTitle = useMemo(() => {
     return pages
       ? pages?.reduce((arr: string[], page) => {
-          if (page?.attributeValues?.show_title?.value?.value === 'true') {
+          if (
+            (page?.attributeValues?.show_title?.value as any)?.value === 'true'
+          ) {
             arr.push(page?.localizeInfos?.menuTitle);
           }
           return arr;
@@ -142,13 +144,13 @@ const DrawerNavigator: React.FC<Props> = () => {
     <>
       {pages?.length && (
         <Drawer.Navigator
+          id={undefined}
           drawerContent={(props: DrawerContentComponentProps) => (
             <CustomDrawerContent menu={drawer} {...props} />
           )}
           backBehavior={'history'}
           initialRouteName={'home'}
           screenOptions={{
-            unmountOnBlur: true,
             header: ({route, options}) => {
               const title = getHeaderTitle(options, route.name);
 
@@ -182,7 +184,7 @@ const DrawerNavigator: React.FC<Props> = () => {
               width: '70%',
               height: '100%',
             },
-            sceneContainerStyle: {
+            sceneStyle: {
               backgroundColor: styleColors.white,
             },
           }}>

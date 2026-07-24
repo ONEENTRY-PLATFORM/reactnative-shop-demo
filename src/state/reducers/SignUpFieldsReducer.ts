@@ -51,7 +51,7 @@ export const getSignUpFieldByMarker = (
     return undefined;
   }
 
-  return state.SignUpFieldsReducer.fields.marker;
+  return state.SignUpFieldsReducer.fields[marker];
 };
 
 export default signUpFieldsSlice.reducer;

@@ -41,8 +41,9 @@ const CustomDropdown: React.FC<Props> = ({data}) => {
       value={activeLanguage}
       onChange={async (item: DropdownItem) => {
         const refresh = await AsyncStorage.getItem('refresh-token');
+        const providerMarker = await AsyncStorage.getItem('provider-marker');
         dispatch(RTKApi.util.resetApiState());
-        reDefine(refresh || '', item.value);
+        reDefine(refresh || '', providerMarker || 'email', item.value);
         setActiveLanguage(item.value);
       }}
       renderItem={renderItem}

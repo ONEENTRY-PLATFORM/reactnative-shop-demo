@@ -59,7 +59,7 @@ export const Badge = (props: BadgeProps) => {
       className={'px-5 py-1 border-sm rounded-full'}
       onPress={() => onChange(index, filters)}
       style={[animatedStyles]}>
-      <Paragraph style={animatedParagraphStyles} size={16} weight="400">
+      <Paragraph style={animatedParagraphStyles as any} size={16} weight="400">
         {label}
       </Paragraph>
     </AnimatedTouchableOpacity>

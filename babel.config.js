@@ -17,6 +17,6 @@ module.exports = {
         version: '2023-07',
       },
     ],
-    'react-native-reanimated/plugin',
+    'react-native-worklets/plugin',
   ],
 };

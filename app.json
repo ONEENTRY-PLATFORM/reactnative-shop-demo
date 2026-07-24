@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#784FCE"
-    },
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "",
@@ -31,6 +26,14 @@
       "@react-native-firebase/app",
       "@react-native-firebase/messaging",
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#784FCE"
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "ios": {
@@ -44,6 +47,19 @@
           "icon": "./assets/images/icon.png",
           "color": "#ffffff",
           "defaultChannel": "default"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "To add photos to reviews, the app needs access to the gallery.",
+          "cameraPermission": "To add photos to reviews, the app needs access to the camera."
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": ""
         }
       ]
     ]

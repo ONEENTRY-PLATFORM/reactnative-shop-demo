@@ -1,20 +1,20 @@
-import {BadgeList} from '../../shared/Badges';
+import {BadgeList} from './Badges';
 import {memo, useEffect, useMemo, useState} from 'react';
 import {IFilterParams} from 'oneentry/dist/products/productsInterfaces';
-import {Screen} from '../../ui/templates/Screen';
-import {useAppDispatch, useAppSelector} from '../../../state/hooks';
+import {Screen} from '../ui/templates/Screen';
+import {useAppDispatch, useAppSelector} from '../../state/hooks';
 import {
   addFilter,
   removeAllFilters,
   removeFilter,
   setBadgeFilterActive,
-} from '../../../state/reducers/FilterSlice';
-import {useGetAttributesByMarkerQuery} from '../../../api/api/RTKApi';
-import Skeleton from '../../shared/Skeleton';
+} from '../../state/reducers/FilterSlice';
+import {useGetAttributesByMarkerQuery} from '../../api/api/RTKApi';
+import Skeleton from './Skeleton';
 
-type Props = object;
+type Props = {};
 
-const CatalogBadges: React.FC<Props> = () => {
+const CatalogBadges: React.FC<Props> = ({}) => {
   const {data: attributes, isLoading} = useGetAttributesByMarkerQuery({
     setMarker: 'filter_badge',
   });
@@ -95,11 +95,11 @@ const CatalogBadges: React.FC<Props> = () => {
     dispatch(setBadgeFilterActive(index));
   };
 
-  if (isLoading) {
-    return (
-      <Skeleton isLoading={isLoading} style={{marginTop: 20}} height={22} />
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Skeleton isLoading={isLoading} style={{marginTop: 20}} height={22} />
+  //   );
+  // }
 
   if (!filters || !tBadges) {
     return <></>;

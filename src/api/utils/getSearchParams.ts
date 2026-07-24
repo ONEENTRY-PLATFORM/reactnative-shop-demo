@@ -9,20 +9,27 @@ const getSearchParams = (searchParams?: {
     | (IFilterParams & {statusMarker?: string})[]
     | undefined = [];
 
-  // check if product has SKU or this is service product
-  const servicesFilter: IFilterParams = {
+  // Keep real products (they have no sku) and exclude service products (which do have sku).
+  // Reference: nextjs-shop/app/api/utils/getSearchParams.ts
+  const servicesFilter = {
     attributeMarker: 'sku',
-    conditionMarker: 'nin',
+    conditionMarker: 'in',
     conditionValue: null,
     title: searchParams?.search || '',
-    pageUrl: ['shop'],
-    isNested: true,
+    isNested: false,
   };
-  expandedFilters.push(servicesFilter);
+  expandedFilters.push(servicesFilter as any);
 
+  // In-stock filter matches Next.js: units_product > 0 AND statusMarker 'in_stock'.
   if (searchParams?.available) {
-    // @ts-ignore
-    expandedFilters.push({statusMarker: 'in_stock'});
+    expandedFilters.push({
+      statusMarker: 'in_stock',
+      attributeMarker: 'units_product',
+      conditionMarker: 'mth',
+      conditionValue: 0,
+      title: searchParams?.search || '',
+      isNested: false,
+    } as any);
   }
 
   if (searchParams?.filters?.length) {

@@ -24,7 +24,7 @@ const SimilarProductsList: React.FC<Props> = ({relatedItems}) => {
       <View style={styles.featuredObjects}>
         <View style={styles.featuredObjectsHeader}>
           <Paragraph size={17} color="black">
-            {relatedItems?.attributeValues?.block_title?.value}
+            {relatedItems?.attributeValues?.block_title?.value as string}
           </Paragraph>
         </View>
       </View>

@@ -33,8 +33,6 @@ const CreateOrderButton: React.FC<Props> = ({
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
 
-  console.log(order.products);
-
   /**
    * Creates a payment session for Stripe payments and navigates to the payment page.
    *
@@ -45,13 +43,14 @@ const CreateOrderButton: React.FC<Props> = ({
       return;
     }
 
-    const {paymentUrl, id: orderId} = await defineApi.Payments.createSession(
-      id,
-      'session',
-    );
+    const session = await defineApi.Payments.createSession(id, 'session');
 
-    if (paymentUrl) {
-      navigate('payment_method', {orderId, paymentUrl});
+    if ((session as IError)?.statusCode >= 400) {
+      return;
+    }
+
+    if ('paymentUrl' in session && session.paymentUrl) {
+      navigate('payment_method', {orderId: session.id, paymentUrl: session.paymentUrl});
     }
   };
 
@@ -88,7 +87,10 @@ const CreateOrderButton: React.FC<Props> = ({
         dispatch(removeOrder());
 
         // Handle payment redirection based on the payment method
-        if (result?.paymentAccountIdentifier === 'stripe') {
+        if (
+          'paymentAccountIdentifier' in result &&
+          result.paymentAccountIdentifier === 'stripe'
+        ) {
           await createSession(result.id);
         } else {
           navigate('orders');

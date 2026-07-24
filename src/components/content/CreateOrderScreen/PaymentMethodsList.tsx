@@ -21,7 +21,7 @@ const PaymentMethodsList: React.FC<Props> = ({}: Props): React.ReactElement => {
     data,
     isLoading: isLoadingAllAccounts,
     error: errorAll,
-  } = useGetAccountsQuery({});
+  } = useGetAccountsQuery();
 
   // Fetch order storage accounts using the custom hook with a specific marker
   const {

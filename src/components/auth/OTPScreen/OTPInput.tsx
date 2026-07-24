@@ -50,7 +50,12 @@ const OTPInput: React.FC<Props> = ({
         params.event === 'activate' ? 'generate_code' : 'reset',
       );
 
-      if ((result as IError).pageData) {
+      if (
+        result &&
+        typeof result === 'object' &&
+        'statusCode' in result &&
+        (result as IError).statusCode >= 400
+      ) {
         throw new Error((result as IError).message);
       }
     } catch (e: any) {

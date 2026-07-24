@@ -1,6 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import {IAttributes} from 'oneentry/dist/base/utils';
+import {IFormAttribute} from 'oneentry/dist/forms/formsInterfaces';
 import {useGetFormByMarkerQuery} from '../../../api';
 import FlexLoader from '../../ui/space/FlexLoader';
 import SignUpInput from './SignUpInput';
@@ -27,7 +27,7 @@ const SignUpForm: React.FC<Props> = ({}): React.ReactElement => {
     <KeyboardAwareScrollView bottomOffset={65}>
       <View className={'mt-10'} style={{gap: 15}}>
         {/*Input fields from CMS in correct order*/}
-        {data?.attributes?.map((item: IAttributes, index: number) => {
+        {data?.attributes?.map((item: IFormAttribute, index: number) => {
           // Special handling for phone input
           if (item?.marker === 'phone_reg') {
             return (
@@ -60,9 +60,10 @@ const SignUpForm: React.FC<Props> = ({}): React.ReactElement => {
                 marker={item?.marker}
                 key={item?.marker}
                 requiredError={
-                  // @ts-ignore
-                  item?.additionalFields?.find(
-                    field => field.marker === 'error_required',
+                  (
+                    Object.values(item?.additionalFields || {}).find(
+                      (field: any) => field?.marker === 'error_required',
+                    ) as any
                   )?.value
                 }
               />

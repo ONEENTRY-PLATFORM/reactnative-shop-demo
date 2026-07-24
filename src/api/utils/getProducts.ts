@@ -1,7 +1,7 @@
 import {IError} from 'oneentry/dist/base/utils';
 import {
   IFilterParams,
-  IProductEntity,
+  IProductsEntity,
   IProductsResponse,
 } from 'oneentry/dist/products/productsInterfaces';
 import {defineApi} from '..';
@@ -45,7 +45,6 @@ export const getProducts = async ({
           limit,
           sortOrder,
           sortKey,
-          statusMarker: availability ? 'in_stock' : undefined,
         },
       );
     } else {
@@ -54,7 +53,6 @@ export const getProducts = async ({
         sortKey: sortKey,
         offset: pageParam * limit,
         limit,
-        statusMarker: availability ? 'in_stock' : undefined,
       });
     }
 
@@ -66,7 +64,7 @@ export const getProducts = async ({
       return res.isVisible;
     });
 
-    return {data: products as IProductEntity[]};
+    return {data: products as IProductsEntity[]};
   } catch (e: any) {
     throw new Error(e.message);
   }

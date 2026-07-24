@@ -1,7 +1,8 @@
-import {useContext, useEffect, useRef, useState} from 'react';
-import {IFormsEntity} from 'oneentry/dist/forms/formsInterfaces';
-import {LanguageContext} from '../../state/contexts/LanguageContext';
-import {IAttributes, IError} from 'oneentry/dist/base/utils';
+import {useEffect, useRef, useState} from 'react';
+import {
+  IFormAttribute,
+  IFormsEntity,
+} from 'oneentry/dist/forms/formsInterfaces';
 import {defineApi} from '../api/defineApi';
 import {isError} from '../api/RTKApi';
 
@@ -39,35 +40,42 @@ export const useGetForm = ({marker}: UseGetFormProps) => {
           throw new Error(result?.message);
         }
 
-        result.attributes = (result.attributes as IAttributes[]).sort(
-          (a, b) => {
-            return a.position - b.position;
-          },
-        );
-        const initValue: FormDataType = {};
-        const reduced = (result?.attributes as IAttributes[]).reduce(
-          (obj, currentValue) => {
-            if (notEditableTypes[currentValue.type] === false) {
-              return obj;
-            }
+        // Проверяем что attributes существует и является массивом
+        if (Array.isArray(result.attributes)) {
+          result.attributes = (result.attributes as IFormAttribute[]).sort(
+            (a, b) => {
+              return a.position - b.position;
+            },
+          );
+          const initValue: FormDataType = {};
+          const reduced = (result?.attributes as IFormAttribute[]).reduce(
+            (obj, currentValue) => {
+              if (notEditableTypes[currentValue.type] === false) {
+                return obj;
+              }
 
-            obj[currentValue.marker] = {
-              value: '',
-              valid: false,
-              required: currentValue?.validators?.requiredValidator?.strict,
-            };
-            return obj;
-          },
-          initValue,
-        );
-        appFormData.current = reduced;
+              const requiredValidator = currentValue?.validators
+                ?.requiredValidator as {strict?: boolean} | undefined;
+              obj[currentValue.marker] = {
+                value: '',
+                valid: false,
+                required: Boolean(requiredValidator?.strict),
+              };
+              return obj;
+            },
+            initValue,
+          );
+          appFormData.current = reduced;
+        }
+
         setForm(result as IFormsEntity);
       } catch (e) {
-        console.log(e);
+        console.log('Error fetching form:', e);
+      } finally {
+        setLoading(false);
       }
     })();
-    setLoading(false);
-  }, [refetch]);
+  }, [refetch, marker]);
 
   return {
     loading,

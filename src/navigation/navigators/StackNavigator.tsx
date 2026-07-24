@@ -7,7 +7,7 @@ const Stack = createNativeStackNavigator<ProductStackNavigatorParamList>();
 
 export const StackNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator id={undefined} screenOptions={{headerShown: false}}>
       <Stack.Screen
         name={'Product'}
         component={Product}

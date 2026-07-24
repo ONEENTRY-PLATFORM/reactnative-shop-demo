@@ -22,6 +22,9 @@ DerivedData
 *.xcuserstate
 **/.xcode.env.local
 
+# env
+.env
+
 # Android/IntelliJ
 #
 build/

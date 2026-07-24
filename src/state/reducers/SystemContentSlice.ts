@@ -109,9 +109,9 @@ export const systemContentSlice = createSlice({
   initialState,
   reducers: {
     addContent(state, action: PayloadAction<IBlockEntity>) {
-      const block = {
+      const block: {attributeValues: any} = {
         attributeValues:
-          action.payload?.attributeValues?.en_US ??
+          (action.payload?.attributeValues as any)?.en_US ??
           action.payload?.attributeValues,
       };
       if (!Object.entries(block)?.length) {

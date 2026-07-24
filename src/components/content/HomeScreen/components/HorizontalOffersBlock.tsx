@@ -18,14 +18,19 @@ const HorizontalOffersBlock: React.FC<Props> = ({products}) => {
         return (
           <OfferHorizontalItem
             sticker={
-              offer.attributeValues.stickers?.value[0]?.extended?.value
+              (offer.attributeValues.stickers?.value as any[])?.[0]?.extended
+                ?.value?.downloadLink
+            }
+            bg={(offer.attributeValues?.bg?.value as any[])?.[0]?.downloadLink}
+            item={
+              (offer.attributeValues?.item_img?.value as any[])?.[0]
                 ?.downloadLink
             }
-            bg={offer.attributeValues?.bg?.value[0]?.downloadLink}
-            item={offer.attributeValues?.item_img?.value[0]?.downloadLink}
-            text={offer.attributeValues?.title?.value}
-            productId={offer.attributeValues?.product_id?.value}
-            sticker_name={offer.attributeValues.stickers?.value[0]?.value}
+            text={offer.attributeValues?.title?.value as string}
+            productId={offer.attributeValues?.product_id?.value as number}
+            sticker_name={
+              (offer.attributeValues.stickers?.value as any[])?.[0]?.value
+            }
             key={index}
           />
         );

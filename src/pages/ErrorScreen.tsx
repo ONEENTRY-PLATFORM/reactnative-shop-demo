@@ -17,10 +17,10 @@ const ErrorScreen: React.FC<Props> = () => {
       style={{justifyContent: 'center'}}
       edges={['horizontal']}>
       <Paragraph size={64} weight={'bold'}>
-        {page?.attributeValues?.error_title?.value}
+        {page?.attributeValues?.error_title?.value as string}
       </Paragraph>
       <Paragraph size={32}>
-        {page?.attributeValues?.error_description?.value}
+        {page?.attributeValues?.error_description?.value as string}
       </Paragraph>
       <View style={{marginTop: 100}} />
     </Screen>

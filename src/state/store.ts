@@ -6,8 +6,8 @@ import orderReducer from './reducers/OrderReducer';
 import SignUpFieldsReducer from './reducers/SignUpFieldsReducer';
 import ContactUsFieldsReducer from './reducers/ContactUsFieldsReducer';
 import lastVisitedScreenReducer from './reducers/lastVisitedScreenSlice';
-import {RTKApi} from '../api';
 import {listenerMiddleware} from './listeners';
+import {RTKApi} from '../api/api/RTKApi';
 
 const rootReducer = combineReducers({
   orderReducer,

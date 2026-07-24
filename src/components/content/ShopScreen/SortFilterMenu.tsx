@@ -128,10 +128,6 @@ const SortFilterMenu: React.FC<Props> = ({setSortOption, sortBlock}) => {
     }, []);
   }, [attributes]);
 
-  // useFocusEffect(() => {
-  //   refetch();
-  // });
-
   return (
     <View className={'absolute bottom-0 w-full'}>
       <View

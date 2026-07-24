@@ -5,7 +5,7 @@ import {IOrderByMarkerEntity} from 'oneentry/dist/orders/ordersInterfaces';
 export type DrawerStackNavigatorParamList = {
   Products: NavigatorScreenParams<ProductStackNavigatorParamList>;
   payment_method: {
-    orderId: string;
+    orderId: number;
     paymentUrl: string;
   };
   successful_payment: {

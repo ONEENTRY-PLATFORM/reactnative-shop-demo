@@ -45,8 +45,10 @@ const MultipleProductItem: React.FC<Props> = ({marker}) => {
           <PriceString
             price={product?.price}
             size={'sm'}
-            currency={product?.attributeValues?.currency?.value || '$'}
-            sale={product?.attributeValues?.sale?.value}
+            currency={
+              (product?.attributeValues?.currency?.value as string) || '$'
+            }
+            sale={product?.attributeValues?.sale?.value as number}
             className={'text-accent'}
           />
         </View>
@@ -62,7 +64,7 @@ const MultipleProductItem: React.FC<Props> = ({marker}) => {
               size={'small'}
               id={product.id}
               inStock={product?.statusIdentifier === 'in_stock'}
-              currency={product?.attributeValues?.currency?.value}
+              currency={product?.attributeValues?.currency?.value as string}
             />
           )}
         </View>

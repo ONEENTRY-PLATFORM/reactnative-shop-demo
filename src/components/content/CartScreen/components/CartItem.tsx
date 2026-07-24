@@ -111,12 +111,14 @@ const CartItem: React.FC<Props> = ({
           <CustomImage
             width={110}
             height={130}
-            uri={productFromCart?.attributeValues.pic?.value?.downloadLink}
+            uri={
+              (productFromCart?.attributeValues.pic?.value as any)?.downloadLink
+            }
           />
         </View>
         {!item.selected && (
           <View
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             className={'bg-lightGray rounded-xs opacity-50'}
           />
         )}
@@ -134,8 +136,8 @@ const CartItem: React.FC<Props> = ({
           <PriceString
             price={productFromCart?.price}
             size={'md'}
-            currency={productFromCart?.attributeValues?.currency?.value}
-            sale={productFromCart?.attributeValues?.sale?.value}
+            currency={productFromCart?.attributeValues?.currency?.value as string}
+            sale={productFromCart?.attributeValues?.sale?.value as number}
           />
         </View>
         <View className={'items-end justify-between mr-0.5'}>

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useCallback, useRef} from 'react';
 import {Screen} from '../../components/ui/templates/Screen';
-import WebView from 'react-native-webview';
+import WebView, {WebViewNavigation} from 'react-native-webview';
 import FlexLoader from '../../components/ui/space/FlexLoader';
 import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native';
 import {DrawerStackNavigatorParamList} from '../../navigation';
@@ -14,65 +14,123 @@ import {useLazyGetPaymentSessionByIdQuery} from '../../api/api/RTKApi';
 
 type Props = object;
 
+const STRIPE_HOSTS = ['stripe.com', 'stripe.network'];
+
+const isStripeUrl = (url: string): boolean => {
+  if (!url) return false;
+  if (url.startsWith('about:') || url.startsWith('data:')) return true;
+  return STRIPE_HOSTS.some(host => url.includes(host));
+};
+
+// Stripe webhooks are async — the OneEntry session may still be "new" at the
+// moment Stripe redirects the browser. Poll a few times before deciding.
+const resolveSessionStatus = async (
+  fetchStatus: () => Promise<{data?: any}>,
+  attempts = 5,
+  delayMs = 1000,
+): Promise<string | undefined> => {
+  for (let i = 0; i < attempts; i++) {
+    const res = await fetchStatus();
+    const status = (res?.data as any)?.status;
+    if (status && status !== 'new' && status !== 'pending') {
+      return status;
+    }
+    await new Promise(r => setTimeout(r, delayMs));
+  }
+  return undefined;
+};
+
 /**
  * PaymentPayScreen Component
  *
- * This component handles the Stripe payment process by loading the payment URL in a WebView.
- * Redirects the user based on the payment result (success or failure).
- *
- * @component
- * @description
- * The `PaymentPayScreen` component is responsible for:
- * - Fetching the payment session ID and payment URL from payment session.
- * - Loading the payment URL in a WebView for the user to complete the payment.
- * - Monitoring the payment status and redirecting the user to appropriate screens
- *   based on whether the payment was successful or not.
+ * Loads the Stripe checkout URL in a WebView. Any redirect away from a Stripe
+ * domain is intercepted — instead of loading it (the CMS success URL points at
+ * a Next.js demo that shows its own 401), the app polls the OneEntry session
+ * status and routes to an in-app success/failure screen.
  */
 const PaymentPayScreen: React.FC<Props> = () => {
   const route =
     useRoute<RouteProp<DrawerStackNavigatorParamList, 'payment_method'>>();
   const id = route.params?.orderId;
-  const [getPaymentStatus] = useLazyGetPaymentSessionByIdQuery();
   const paymentUrl = route.params?.paymentUrl;
+  const [getPaymentStatus] = useLazyGetPaymentSessionByIdQuery();
   const navigation = useAppNavigation();
   const {successful_payment_text, unsuccessful_payment_text} = useAppSelector(
     state => state.systemContentReducer.content,
   );
 
-  /**
-   * Monitors the WebView's navigation state to detect payment completion or failure.
-   * @param {Object} navState - The current navigation state of the WebView.
-   * @param {string} navState.url - The current URL loaded in the WebView.
-   * @param {string} navState.title - The title of the current page in the WebView.
-   * @param {boolean} navState.canGoBack - Indicates if the WebView can navigate back.
-   */
-  const onNavigationStateChange = async (navState: {
-    url: string;
-    title: string;
-    canGoBack: boolean;
-  }) => {
-    const {url} = navState;
-    console.log(url);
-    const res = await getPaymentStatus({id}, false);
-    if (res?.data) {
-      // @ts-ignore
-      if (res?.data?.status === 'completed') {
-        navigate('message', {message: successful_payment_text});
-        // @ts-ignore
-        return navigation.setParams({orderId: undefined});
+  // Guards against re-entry: WebView fires onShouldStartLoadWithRequest and
+  // onNavigationStateChange multiple times during a single redirect.
+  const handledRef = useRef(false);
+
+  const finish = useCallback(
+    async (assumeSuccessFromUrl: boolean) => {
+      if (handledRef.current) return;
+      handledRef.current = true;
+
+      let status: string | undefined;
+      if (id) {
+        status = await resolveSessionStatus(() => getPaymentStatus({id}));
       }
 
-      if (!url.includes('stripe')) {
-        navigate('message', {message: unsuccessful_payment_text});
-      }
-    }
-  };
+      const succeeded =
+        status === 'completed' ||
+        status === 'paid' ||
+        (status === undefined && assumeSuccessFromUrl);
 
-  useFocusEffect(() => {
-    if (!id || !paymentUrl) {
-      navigate('home');
-    }
-  });
+      navigate('message', {
+        message: succeeded ? successful_payment_text : unsuccessful_payment_text,
+      });
+      // @ts-ignore route params typing
+      navigation.setParams({orderId: undefined});
+    },
+    [
+      id,
+      getPaymentStatus,
+      navigation,
+      successful_payment_text,
+      unsuccessful_payment_text,
+    ],
+  );
+
+  // Preferred hook: cancel navigation to non-Stripe URLs before the WebView
+  // renders someone else's page.
+  const onShouldStartLoadWithRequest = useCallback(
+    (req: {url: string}) => {
+      if (handledRef.current) return false;
+      if (isStripeUrl(req.url)) return true;
+      // Stripe redirect usually carries success/cancel markers in the URL. Use
+      // them as a hint; final decision still comes from the session status.
+      const looksLikeSuccess =
+        /success|complete|paid/i.test(req.url) &&
+        !/cancel|fail/i.test(req.url);
+      finish(looksLikeSuccess);
+      return false;
+    },
+    [finish],
+  );
+
+  // Fallback for platforms/paths where onShouldStartLoadWithRequest doesn't
+  // fire (Android POST redirects, iframes, etc.).
+  const onNavigationStateChange = useCallback(
+    (navState: WebViewNavigation) => {
+      if (handledRef.current) return;
+      if (isStripeUrl(navState.url)) return;
+      const looksLikeSuccess =
+        /success|complete|paid/i.test(navState.url) &&
+        !/cancel|fail/i.test(navState.url);
+      finish(looksLikeSuccess);
+    },
+    [finish],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!handledRef.current && (!id || !paymentUrl)) {
+        navigate('home');
+      }
+    }, [id, paymentUrl]),
+  );
 
   return (
     <Screen isFull white edges={['top', 'horizontal']}>
@@ -97,6 +155,7 @@ const PaymentPayScreen: React.FC<Props> = () => {
                 />
               </View>
             )}
+            onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
             onNavigationStateChange={onNavigationStateChange}
             renderLoading={() => <FlexLoader />}
             source={{uri: paymentUrl}}

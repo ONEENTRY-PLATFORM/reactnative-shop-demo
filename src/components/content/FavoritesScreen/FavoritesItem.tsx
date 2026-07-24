@@ -52,8 +52,8 @@ const FavoritesItem: React.FC<Props> = ({
       <View className={'w-[26px] h-[26px] absolute top-5 left-2.5 z-10'}>
         <Image
           source={{
-            uri: product.attributeValues?.stickers?.value?.extended?.value
-              ?.downloadLink,
+            uri: (product.attributeValues?.stickers?.value as any)?.extended
+              ?.value?.downloadLink,
           }}
           className={'w-full h-full object-contain'}
         />
@@ -63,7 +63,7 @@ const FavoritesItem: React.FC<Props> = ({
           <CustomImage
             width={110}
             height={130}
-            uri={product?.attributeValues?.pic?.value?.downloadLink}
+            uri={(product?.attributeValues?.pic?.value as any)?.downloadLink}
           />
         </View>
       </View>
@@ -80,8 +80,8 @@ const FavoritesItem: React.FC<Props> = ({
           <PriceString
             price={product?.price}
             size={'md'}
-            currency={product?.attributeValues?.currency?.value}
-            sale={product?.attributeValues?.sale?.value}
+            currency={product?.attributeValues?.currency?.value as string}
+            sale={product?.attributeValues?.sale?.value as number}
           />
         </View>
         <View className={'items-center justify-between'}>

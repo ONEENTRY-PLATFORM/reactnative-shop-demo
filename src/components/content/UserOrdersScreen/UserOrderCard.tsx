@@ -28,7 +28,7 @@ const UserOrderCard: React.FC<Props> = ({order}) => {
         #{order?.id}
       </Paragraph>
       <Paragraph size={16} color={status[order.statusIdentifier] || 'gray'}>
-        {order.statusIdentifier}
+        {order.statusLocalizeInfos?.title || order.statusIdentifier}
       </Paragraph>
     </TouchableOpacity>
   );

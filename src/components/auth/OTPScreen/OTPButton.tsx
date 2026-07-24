@@ -61,9 +61,14 @@ const OTPButton: React.FC<Props> = memo(({setValue, value}) => {
           }
 
           if (result) {
-            await signInUser(params.email, params.password);
+            const signInResult = await signInUser(
+              params.email,
+              params.password,
+            );
 
-            authenticate(); // Trigger re-authentication.
+            if (signInResult.isSuccess) {
+              authenticate(); // Trigger re-authentication.
+            }
           }
         }
       }

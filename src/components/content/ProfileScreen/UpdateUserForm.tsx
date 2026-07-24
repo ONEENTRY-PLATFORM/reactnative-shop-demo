@@ -99,17 +99,17 @@ const UpdateUserForm: React.FC<Props> = ({editing, setEditing}) => {
     // @ts-ignore
     const fields = user?.formData;
     if (fields) {
-      fields.map(item => {
+      fields.map((item: {marker: string; value: unknown}) => {
         if (item.marker === 'phone_reg') {
-          setPhoneValue(item.value);
+          setPhoneValue(String(item.value ?? ''));
         }
 
         if (item.marker === 'name_reg') {
-          setNameValue(item.value);
+          setNameValue(String(item.value ?? ''));
         }
 
         if (item.marker === 'address_reg') {
-          setAddressValue(item.value);
+          setAddressValue(String(item.value ?? ''));
         }
       });
     }

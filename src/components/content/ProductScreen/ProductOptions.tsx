@@ -58,7 +58,7 @@ const ProductOptions: React.FC<Props> = ({mainProduct}) => {
             }
           }}>
           <View className={'flex-row items-center'}>
-            {product?.attributeValues?.color?.value?.map(
+            {(product?.attributeValues?.color?.value as any[])?.map(
               (color: any, index: number) => (
                 <View
                   key={color + index}
@@ -73,9 +73,9 @@ const ProductOptions: React.FC<Props> = ({mainProduct}) => {
             )}
 
             <Paragraph size={12} className={'ml-5'} color="lightGray">
-              {product?.attributeValues?.color?.value?.length > 1
+              {(product?.attributeValues?.color?.value as any[])?.length > 1
                 ? 'multi'
-                : product?.attributeValues?.color?.value[0]?.title}
+                : (product?.attributeValues?.color?.value as any[])?.[0]?.title}
             </Paragraph>
           </View>
         </TouchableOpacity>

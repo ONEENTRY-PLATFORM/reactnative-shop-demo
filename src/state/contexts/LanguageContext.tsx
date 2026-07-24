@@ -60,6 +60,7 @@ export const LanguageProvider = ({
     useGetSingleAttributeInSetByMarkerQuery({
       setMarker: 'system_content',
       attributeMarker: 'cart_item_options',
+      langCode: activeLanguage,
     });
   const {data: staticData, refetch: refetchStaticContent} =
     useGetAttributesByMarkerQuery({

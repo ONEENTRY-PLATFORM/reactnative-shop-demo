@@ -88,7 +88,7 @@ const HomeBanner: React.FC<Props> = ({
               }>
               <TouchableOpacity onPress={onTextClick}>
                 <Paragraph color={'white'} size={24} weight={'600'}>
-                  {banner?.attributeValues?.title?.value || ''}
+                  {(banner?.attributeValues?.title?.value as string) || ''}
                 </Paragraph>
               </TouchableOpacity>
               <Paragraph
@@ -96,7 +96,7 @@ const HomeBanner: React.FC<Props> = ({
                 color={'black'}
                 size={20}
                 weight={'300'}>
-                {banner?.attributeValues?.quote?.value || ''}
+                {(banner?.attributeValues?.quote?.value as string) || ''}
               </Paragraph>
             </Animated.View>
           </Animated.View>

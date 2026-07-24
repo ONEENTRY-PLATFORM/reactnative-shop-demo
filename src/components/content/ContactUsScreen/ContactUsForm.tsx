@@ -6,7 +6,7 @@ import {useGetForm} from '../../../api';
 import {Screen} from '../../ui/templates/Screen';
 import TopSpacerV2 from '../../ui/space/TopSpacerV2';
 import Loader from '../../ui/space/Loader';
-import {IAttributes} from 'oneentry/dist/base/utils';
+import {IFormAttribute} from 'oneentry/dist/forms/formsInterfaces';
 import ContactUsInput from './ContactUsInput';
 import {useAppDispatch, useAppSelector} from '../../../state/hooks';
 import {
@@ -32,6 +32,21 @@ const ContactUsForm: React.FC = (): React.ReactElement => {
   const {loading, form, refetch} = useGetForm({
     marker: 'contact_us',
   });
+
+  // Отладочная информация
+  useEffect(() => {
+    if (form) {
+      console.log('Form loaded:', {
+        identifier: form.identifier,
+        hasModuleFormConfigs: !!form.moduleFormConfigs,
+        moduleFormConfigsLength: form.moduleFormConfigs?.length,
+        firstConfig: form.moduleFormConfigs?.[0],
+        attributesCount: Array.isArray(form.attributes)
+          ? form.attributes.length
+          : 0,
+      });
+    }
+  }, [form]);
   const [isSubmiting, setISubmiting] = useState(false);
   const {user} = useAuth();
   const success_message = form?.localizeInfos?.successMessage;
@@ -53,31 +68,45 @@ const ContactUsForm: React.FC = (): React.ReactElement => {
   /**
    * Validates the form fields and triggers either form submission or CAPTCHA.
    */
-  const verify = () => {
+  const verify = async () => {
     setISubmiting(true);
     let propertiesArray = Object.keys(fields);
 
-    const isValid = propertiesArray?.findIndex(
+    // findIndex возвращает -1 если элемент не найден, иначе индекс
+    const invalidFieldIndex = propertiesArray?.findIndex(
       property => !fields[property].valid,
     );
-    if (!isValid) {
+    if (invalidFieldIndex !== -1) {
       Alert.alert(incorrect_fields_text);
+      setISubmiting(false);
       return;
     }
 
     const filteredObject = Object.fromEntries(
-      Object.entries(fields).filter(([key, value]) => value.value !== '' && value.value !== undefined)
+      Object.entries(fields).filter(
+        ([key, value]) => value.value !== '' && value.value !== undefined,
+      ),
     );
-    if (!isCaptcha) {
-      return submitContactUsForm(filteredObject, onSuccess, onError);
+
+    if (!isCaptcha && form?.moduleFormConfigs?.[0] && form?.identifier) {
+      await submitContactUsForm(
+        filteredObject,
+        onSuccess,
+        onError,
+        form.moduleFormConfigs[0],
+        form.identifier,
+      );
     }
 
     setISubmiting(false);
   };
 
   useEffect(() => {
-    if (form) {
-      form.attributes?.map((attribute: IAttributes) => {
+    if (form && Array.isArray(form.attributes)) {
+      // Очищаем старые поля перед загрузкой новых
+      dispatch(clearAllFieldsContactUs());
+
+      form.attributes?.forEach((attribute: IFormAttribute) => {
         const fieldValue =
           (attribute?.marker === 'first_nme' &&
             user?.formData?.find(field => field.marker === 'name_reg')
@@ -99,11 +128,11 @@ const ContactUsForm: React.FC = (): React.ReactElement => {
               title: attribute?.localizeInfos?.title,
               listTitles: attribute?.listTitles,
             },
-          }),
+          } as any),
         );
       });
     }
-  }, [form]);
+  }, [form, dispatch]);
 
   // Callback function for successful form submission.
   const onSuccess = () => {
@@ -120,6 +149,22 @@ const ContactUsForm: React.FC = (): React.ReactElement => {
 
   if (loading) {
     return <Loader />;
+  }
+
+  if (!form) {
+    return (
+      <Screen edges={['horizontal']}>
+        <View style={{padding: 20}}>
+          <BigButton
+            action={refetch}
+            isLoading={false}
+            title="Загрузить форму"
+            outline={false}
+            disabled={false}
+          />
+        </View>
+      </Screen>
+    );
   }
 
   return (
@@ -182,7 +227,6 @@ const ContactUsForm: React.FC = (): React.ReactElement => {
               //   }
 
               case 'list':
-                console.log(value);
                 const dataArray = value?.listTitles?.reduce(
                   (arr: any[], currentValue) => {
                     arr.push({

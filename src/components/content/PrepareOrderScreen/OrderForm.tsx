@@ -1,5 +1,5 @@
 import React, {memo, useEffect, useMemo, useState} from 'react';
-import {IAttributes} from 'oneentry/dist/base/utils';
+import {IFormAttribute} from 'oneentry/dist/forms/formsInterfaces';
 import Time from '../../../assets/icons/Time.svg';
 import Calendar from '../../../assets/icons/Calendar.svg';
 import {Keyboard, Platform} from 'react-native';
@@ -75,7 +75,7 @@ const OrderForm: React.FC<Props> = () => {
     <KeyboardAwareScrollView
       bottomOffset={10}
       contentContainerStyle={{gap: 12}}>
-      {data?.attributes?.map((attribute: IAttributes) => {
+      {data?.attributes?.map((attribute: IFormAttribute) => {
         if (attribute?.marker === 'shipping_interval') {
           return (
             <>
@@ -107,8 +107,11 @@ const OrderForm: React.FC<Props> = () => {
                     console.log(attribute?.additionalFields);
                     Toast.show({
                       type: 'info',
-                      // @ts-ignore
-                      text1: attribute?.additionalFields?.[0]?.value,
+                      text1: (
+                        Object.values(
+                          attribute?.additionalFields || {},
+                        )[0] as any
+                      )?.value,
                     });
                   }
                 }}
@@ -123,9 +126,9 @@ const OrderForm: React.FC<Props> = () => {
           return (
             <OrderFormInput
               placeholder={
-                attribute?.additionalFields?.find(
-                  el => el.marker === 'placeholder',
-                )?.value
+                (Object.values(attribute?.additionalFields || {}).find(
+                  (el: any) => el.marker === 'placeholder',
+                ) as any)?.value
               }
               key={attribute?.marker}
               field={{...attribute}}

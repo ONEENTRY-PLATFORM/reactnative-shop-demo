@@ -25,6 +25,7 @@ const AuthNavigator: React.FC<Props> = () => {
   } = useAppSelector(state => state.systemContentReducer.content);
   return (
     <Stack.Navigator
+      id={undefined}
       screenOptions={{
         header: ({options}) => {
           return <AuthTopBar title={options.title} />;

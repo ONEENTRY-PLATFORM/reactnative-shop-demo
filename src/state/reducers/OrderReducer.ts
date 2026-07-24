@@ -11,10 +11,13 @@ export type IAppOrder = {
   products: IOrderProductData[];
 };
 
+export type TimeSlot = {hours: number; minutes: number};
+export type AvailableTimes = [TimeSlot[][], TimeSlot[][] | undefined];
+
 type InitialStateType = {
   order: IAppOrder | undefined;
   currency?: string;
-  availableTimes?: [number, number, number[] | undefined, number];
+  availableTimes?: AvailableTimes;
   selectedDate?: string;
   orderTime?: number;
   paymentMethods?: {
@@ -99,7 +102,7 @@ const orderSlice = createSlice({
     },
     addAvailableTimeSlots(
       state,
-      action: PayloadAction<[number, number] | [number, number, number[]]>,
+      action: PayloadAction<AvailableTimes | undefined>,
     ) {
       state.availableTimes = action.payload;
     },

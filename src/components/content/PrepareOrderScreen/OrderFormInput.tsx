@@ -1,13 +1,13 @@
 import React, {FunctionComponent} from 'react';
 import NormalInput from '../../shared/NormalInput';
-import {IAttributes} from 'oneentry/dist/base/utils';
+import {IFormAttribute} from 'oneentry/dist/forms/formsInterfaces';
 import {InputValue} from '../../ui/inputs/AppInput';
 import {useAppDispatch} from '../../../state/hooks';
 import {addData} from '../../../state/reducers/OrderReducer';
 import {TextInputProps} from 'react-native';
 
 type Props = {
-  field: IAttributes;
+  field: IFormAttribute;
   value: string;
   onPressIcon?: () => void;
   Icon?: FunctionComponent;

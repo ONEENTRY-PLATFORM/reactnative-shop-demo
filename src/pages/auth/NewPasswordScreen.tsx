@@ -24,13 +24,17 @@ const NewPasswordScreen: React.FC<Props> = () => {
       const result = await defineApi.AuthProvider.changePassword(
         'email',
         email,
-        '2',
+        email,
+        2,
         code,
         password,
         password,
       );
 
-      if (result) {
+      if (typeof result === 'object' && 'statusCode' in result) {
+        throw new Error((result as any)?.message);
+      }
+      if (result === true) {
         navigateAuth('auth_sign_in', {method: 'email'});
       }
     } catch (e: any) {

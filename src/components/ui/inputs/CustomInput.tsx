@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
     width: '100%',
     fontSize: 14,
     paddingVertical: 5,
-    fontWeight: '700',
     lineHeight: 20,
   },
 });

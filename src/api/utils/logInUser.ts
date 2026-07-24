@@ -7,9 +7,20 @@ type LogInProps = {method: string; login: string; password: string};
 
 export const logInUser = async ({method, login, password}: LogInProps) => {
   try {
-    if (result?.accessToken) {
+    const body: IAuthPostBody = {
+      authData: [
+        {marker: 'email_reg', value: login},
+        {marker: 'password_reg', value: password},
+      ],
+    };
+    const result = await defineApi.AuthProvider.auth(method, body);
+    if ((result as IError)?.statusCode >= 400) {
+      throw new Error((result as IError)?.message);
+    }
+    if ('accessToken' in result && result.accessToken) {
       return {data: result};
     }
+    return {error: 'No access token'};
   } catch (e: any) {
     return {error: e.message};
   }

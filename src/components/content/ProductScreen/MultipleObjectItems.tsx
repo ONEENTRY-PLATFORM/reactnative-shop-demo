@@ -20,7 +20,7 @@ const MultipleObjectItems: React.FC<Props> = ({block}) => {
       <View style={styles.featuredObjects}>
         <View style={styles.featuredObjectsHeader}>
           <Paragraph size={17} color="black">
-            {attributeValues?.block_title?.value}
+            {attributeValues?.block_title?.value as string}
           </Paragraph>
         </View>
       </View>

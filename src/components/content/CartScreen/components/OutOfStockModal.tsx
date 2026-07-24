@@ -20,7 +20,7 @@ const OutOfStockItem = ({item}: {item: IProductsEntity}) => {
           <CustomImage
             width={110}
             height={130}
-            uri={item.attributeValues.pic?.value?.downloadLink}
+            uri={(item.attributeValues.pic?.value as any)?.downloadLink}
           />
         </View>
       </View>
@@ -35,8 +35,8 @@ const OutOfStockItem = ({item}: {item: IProductsEntity}) => {
           <PriceString
             price={item.price}
             size={'md'}
-            currency={item.attributeValues?.currency?.value}
-            sale={item.attributeValues?.sale?.value}
+            currency={item.attributeValues?.currency?.value as string}
+            sale={item.attributeValues?.sale?.value as number}
           />
         </View>
       </View>
@@ -50,9 +50,11 @@ const OutOfStockModal: React.FC<Props> = ({
   productsOutOfStock,
 }) => {
   const {top} = useSafeAreaInsets();
-  const {go_next_anyway: buttonText, view_catalog_text} = useAppSelector(
+  const {go_next_anyway, view_catalog_text} = useAppSelector(
     state => state.systemContentReducer.content,
   );
+  const buttonText = go_next_anyway || 'Continue anyway';
+  const catalogText = view_catalog_text || 'View catalog';
   const cart = useAppSelector(state => state.userStateReducer.cart);
 
   const hasAvailableProducts = useMemo(() => {
@@ -105,7 +107,7 @@ const OutOfStockModal: React.FC<Props> = ({
                 size: 16,
               }}
               onPress={handleGoToShop}>
-              {view_catalog_text}
+              {catalogText}
             </Button>
           )}
         </View>

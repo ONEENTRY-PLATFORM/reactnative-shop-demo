@@ -6,7 +6,7 @@
   OneEntry: Shopping online on React native
 </h1>
 
-![expo](https://img.shields.io/badge/%20expo-%20~52.0.35-blue) ![OneEntry](https://img.shields.io/badge/%20oneentry-%201.0.114-blue)
+![expo](https://img.shields.io/badge/%20expo-%20~57.0.8-blue) ![OneEntry](https://img.shields.io/badge/%20oneentry-%201.0.156-blue)
 
 ## Table of Contents
 
@@ -37,10 +37,12 @@ This application is built using the [Expo framework][expo], allowing for streaml
 
 - 📝 **User creation:** Register users via different providers (email, phone) and customize which data to store.
 - ✅ **User Activation:** Activate users via code, such as through email verification code.
+- 🔐 **Google Sign-In:** One-tap authentication via Google OAuth alongside classic email/password.
 - 🔄 **State Management:** Utilize Redux Toolkit for effective state management.
 - 🛒 **Efficient Shop Catalog:** Easily manage an unlimited number of products in the catalog.
 - 🔍 **Advanced Filtering:** Apply a variety of filters to the product catalog for better organization and search.
 - 💡 **Product Recommendations:** Display various selections of products.
+- ⭐ **Product Reviews:** Users can leave star ratings, text and photo reviews on products.
 - 🖼️ **Block Content:** Using entities of the "Block" type from CMS.
 - 📋 **Feedback Forms:** Include customizable feedback forms with captcha protection to prevent spam.
 - 💳 **Order Creation and Purchases:** Complete transactions using [Stripe][stripe] for secure, seamless payments.
@@ -53,8 +55,8 @@ This application is built using the [Expo framework][expo], allowing for streaml
 
 | File(s)                                              | Description                                           |
 |------------------------------------------------------|-------------------------------------------------------|
-| `.env`                                               | OneEntry CMS project configuration                    |
-| `/src/defineApi`                                           | API methods and hooks definition                      |
+| `.env` / `.env.example`                              | OneEntry CMS project configuration                    |
+| `/src/api`                                           | OneEntry SDK setup, RTK Query slice and helpers       |
 | `/src/components`                                    | Components used **directly on pages**                 |
 | &nbsp;&nbsp;├─ `/auth`                               | Components for **auth pages** (login, registration)   |
 | &nbsp;&nbsp;├─ `/content`                            | Components for **content pages** (order creation, etc.) |
@@ -99,11 +101,29 @@ This application is built using the [Expo framework][expo], allowing for streaml
 
 ### Step 1. Set up the project
 
-Open the `.env` file and fill the variables with your project data
+Copy the environment template and fill in your OneEntry project credentials:
 
-Configure push notifications. Add `google-services.json` and `GoogleService-Info.plist` files to project root. Detailed instruction for Push Notifications setup you can see in our [Documentation][doc-push].
+```bash
+cp .env.example .env
+```
 
-Configure `app.json`.
+Then edit `.env` and set `PROJECT_URL` and `APP_TOKEN` to values from your OneEntry project. The real `.env` is git-ignored so your token never gets committed.
+
+Configure push notifications **and Google Sign-In**. Both features rely on the Firebase config files:
+
+- `google-services.json` — Android
+- `GoogleService-Info.plist` — iOS (used by FCM **and** by Google Sign-In)
+
+Add both files to the project root. Detailed instructions for the Push Notifications setup are available in our [Documentation][doc-push].
+
+Configure Google Sign-In:
+
+1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials), create OAuth 2.0 Client IDs of types **Web** and **iOS** for your project.
+2. Open `App.tsx` and replace the empty `webClientId` and `iosClientId` in the `GoogleSignin.configure({...})` call with your own values.
+3. Open `src/components/auth/WelcomeScreen/useGoogleSignIn.ts` and replace the empty `client_id`, `client_secret` and `redirect_uri` in the `oauth('google_ios', {...})` call with values from your Google Cloud project. **Never commit real client secrets to a public repo.**
+4. Open `app.json` and set the `iosUrlScheme` under the `@react-native-google-signin/google-signin` plugin to the reversed iOS OAuth client ID (e.g. `com.googleusercontent.apps.<YOUR_IOS_CLIENT_ID>`).
+
+Finally, fill in the empty fields in `app.json` — `expo.name`, `expo.slug`, `ios.bundleIdentifier`, `android.package`, `ios.appleTeamId`, and `ios.associatedDomains` — with values that match your own Apple Team ID and app identifiers.
 
 ### Step 2. Install dependencies
 
@@ -177,7 +197,7 @@ This is the central hub for all documentation. Below are links to specific secti
 
 #### Authorization
 - [Authorization Documentation](./documentations/Authorization.md)
-- Covers login, sign-up, token management, and account activation.
+- Covers login, sign-up, Google Sign-In (OAuth), token management, device fingerprinting, and account activation.
 
 #### Orders
 - [Orders Documentation](./documentations/OrderFlow.md)

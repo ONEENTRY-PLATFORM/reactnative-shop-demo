@@ -6,7 +6,8 @@ import {
   ViewProps,
   ViewStyle,
 } from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useContext} from 'react';
+import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
 import {layoutPadding, styleColors} from '../../../utils/consts';
 
 export type Edge = 'top' | 'bottom' | 'horizontal';
@@ -30,7 +31,9 @@ export const Screen = (props: ScreenProps) => {
     isHideKeyboard,
     ...rest
   } = props;
-  const {bottom, top} = useSafeAreaInsets();
+  const insets = useContext(SafeAreaInsetsContext);
+  const bottom = insets?.bottom ?? 0;
+  const top = insets?.top ?? 0;
 
   const styles: ViewStyle = {
     paddingBottom: edges?.includes('bottom') ? bottom + 60 : undefined,

@@ -42,7 +42,7 @@ const OfferVerticalItem: React.FC<Props> = ({
   const onClick = () => {
     if (block.templateIdentifier === 'youtube_home_block') {
       return Linking.openURL(
-        block?.attributeValues?.link?.value || 'https://google.com',
+        (block?.attributeValues?.link?.value as string) || 'https://google.com',
       );
     }
     if (block.templateIdentifier === 'new_arrivals') {
@@ -61,14 +61,17 @@ const OfferVerticalItem: React.FC<Props> = ({
   return (
     <TouchableOpacity onPress={onClick}>
       <ImageBackground
-        source={{uri: block?.attributeValues?.bg?.value[0]?.downloadLink}}
+        source={{
+          uri: (block?.attributeValues?.bg?.value as any[])?.[0]?.downloadLink,
+        }}
         resizeMode="cover"
         borderRadius={20}
         className={'w-full rounded-lg h-[180px] mr-5 mt-5'}>
         <View className={'absolute w-full h-full items-center justify-center'}>
           <Image
             source={{
-              uri: block?.attributeValues?.item_img?.value[0]?.downloadLink,
+              uri: (block?.attributeValues?.item_img?.value as any[])?.[0]
+                ?.downloadLink,
             }}
             className={'w-[140px] h-[140px] object-contain'}
           />
@@ -76,8 +79,8 @@ const OfferVerticalItem: React.FC<Props> = ({
         <View className={'w-9 h-9 absolute top-2.5 left-2.5'}>
           <Image
             source={{
-              uri: block?.attributeValues?.stickers?.value?.extended?.value
-                ?.downloadLink,
+              uri: (block?.attributeValues?.stickers?.value as any)?.extended
+                ?.value?.downloadLink,
             }}
             className={'w-9 h-9 object-contain'}
           />
@@ -85,7 +88,9 @@ const OfferVerticalItem: React.FC<Props> = ({
         <View className={'absolute left-6 bottom-4 w-1/2'}>
           <Paragraph weight={'700'} size={24} color={'white'}>
             {block?.templateIdentifier !== 'youtube_home_block' &&
-              block.attributeValues?.title?.value?.toString()?.toUpperCase()}
+              (block.attributeValues?.title?.value as any)
+                ?.toString()
+                ?.toUpperCase()}
           </Paragraph>
         </View>
       </ImageBackground>

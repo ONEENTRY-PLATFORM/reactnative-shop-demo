@@ -20,10 +20,13 @@ const UnauthorizedBlock: React.FC<Props> = ({page}) => {
       white
       edges={['top', 'horizontal']}>
       <Paragraph size={56} weight={'bold'}>
-        {page?.attributeValues?.error_title?.value}
+        {page?.attributeValues?.error_title?.value as string}
       </Paragraph>
       <Paragraph size={28}>
-        {page?.attributeValues?.error_description?.value[0]?.plainValue}
+        {
+          (page?.attributeValues?.error_description?.value as any[])?.[0]
+            ?.plainValue
+        }
       </Paragraph>
       <Button
         rounded
@@ -34,7 +37,7 @@ const UnauthorizedBlock: React.FC<Props> = ({page}) => {
           size: 16,
         }}
         onPress={action}>
-        {page?.attributeValues?.error_button_text?.value}
+        {page?.attributeValues?.error_button_text?.value as string}
       </Button>
     </Screen>
   );

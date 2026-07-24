@@ -71,13 +71,17 @@ const CreatedOrdersDetails: React.FC<Props> = ({orderProps}) => {
       }
 
       // Create a payment session and navigate to the payment method screen
-      const {paymentUrl, id: orderId} = await defineApi.Payments.createSession(
-        order.id,
-        'session',
-      );
+      const session = await defineApi.Payments.createSession(order.id, 'session');
 
-      if (paymentUrl) {
-        navigate('payment_method', {orderId, paymentUrl});
+      if (isError(session)) {
+        throw new Error(session?.message);
+      }
+
+      if ('paymentUrl' in session && session.paymentUrl) {
+        navigate('payment_method', {
+          orderId: session.id,
+          paymentUrl: session.paymentUrl,
+        });
       }
     } catch (e) {
       console.error(e);
@@ -154,8 +158,9 @@ const CreatedOrdersDetails: React.FC<Props> = ({orderProps}) => {
             <Paragraph weight={'700'} size={14} color={'gray'}>
               {order_info_address_placeholder}:{' '}
             </Paragraph>{' '}
-            {order?.formData?.find(value => value.marker === 'order_address')
-              ?.value || '-'}
+            {(order?.formData?.find(
+              value => value.marker === 'order_address',
+            )?.value as string) || '-'}
           </Paragraph>
         </View>
         <Footer />

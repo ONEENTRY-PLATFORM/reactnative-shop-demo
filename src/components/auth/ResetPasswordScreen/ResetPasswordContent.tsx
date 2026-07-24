@@ -61,7 +61,7 @@ const ResetPasswordContent: React.FC<Props> = ({}): React.ReactElement => {
       }
 
       navigateAuth('activate_user', {
-        email: value,
+        email: value.value,
         event: 'reset',
         method: 'email',
       });

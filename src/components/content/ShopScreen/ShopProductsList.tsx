@@ -40,12 +40,10 @@ const ShopProductsList: React.FC<Props> = ({pageUrl, sortOption}) => {
     if (products?.length && products[0]?.additional?.prices) {
       dispatch(addMinMaxFilterPlaceholders(products[0]?.additional?.prices));
 
-      const currency = products[0]?.attributeValues?.currency?.value;
+      const currency = products[0]?.attributeValues?.currency?.value as string;
       currency && dispatch(addCartCurrency(currency));
     }
   }, [products]);
-
-  console.log(products?.map(product => product.id));
 
   if (isLoading) {
     return <CatalogLoadingComponent columns={columns} />;
@@ -76,7 +74,6 @@ const ShopProductsList: React.FC<Props> = ({pageUrl, sortOption}) => {
       }}
       ItemSeparatorComponent={() => <View style={{height: 10}} />}
       numColumns={columns}
-      estimatedItemSize={columns > 1 ? 265 : 162}
       ListHeaderComponent={<View style={{marginTop: 10}} />}
       ListFooterComponent={
         <View className={'h-72 items-center justify-start'}>

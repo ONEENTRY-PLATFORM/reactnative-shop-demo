@@ -1,7 +1,6 @@
 import {RefreshControl, View} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationProps} from '../../navigation/types/types';
-import {useGetBlocksByPageUrlQuery} from '../../api';
 import {Screen} from '../../components/ui/templates/Screen';
 import Footer from '../../components/ui/space/Footer';
 import Animated, {
@@ -18,6 +17,9 @@ import {
   VerticalOffersBlock,
 } from '../../components/content/HomeScreen';
 import Skeleton from '../../components/shared/Skeleton';
+import {useGetBlocksByPageUrlQuery} from '../../api/api/RTKApi';
+import {navigate} from '../../navigation/utils/NavigatonRef';
+import {useNavigation} from '@react-navigation/native';
 
 export const HomeScreen: React.FC<NavigationProps> = ({route}) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -38,7 +40,6 @@ export const HomeScreen: React.FC<NavigationProps> = ({route}) => {
     badges,
     loading: loadingBlocks,
   } = useHomeBlocks(blocks);
-
   const {top} = useSafeAreaInsets();
 
   //Header animations
