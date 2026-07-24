@@ -29,6 +29,4 @@ export const styleColors = {
   red: '#FF3932',
 };
 
-export const projectUrl = 'https://react-native-course.oneentry.cloud';
-
 export type StyleColors = keyof typeof styleColors;
