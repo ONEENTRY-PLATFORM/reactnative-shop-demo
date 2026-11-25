@@ -6,7 +6,7 @@
   OneEntry: Shopping online on React native
 </h1>
 
-![expo](https://img.shields.io/badge/%20expo-%20~57.0.8-blue) ![OneEntry](https://img.shields.io/badge/%20oneentry-%201.0.156-blue)
+![expo](https://img.shields.io/badge/%20expo-%20~58.0.26-blue) ![OneEntry](https://img.shields.io/badge/%20oneentry-%201.0.186-blue)
 
 ## Table of Contents
 
@@ -127,6 +127,8 @@ Finally, fill in the empty fields in `app.json` — `expo.name`, `expo.slug`, `i
 
 ### Step 2. Install dependencies
 
+The project requires **Node.js 24** or newer (React Native Firebase 27 does not install on older versions).
+
 Install project dependencies using **yarn**.
 
 ```bash
@@ -171,7 +173,7 @@ First, try running doctor with the following command to check for any issues:
 npx expo-doctor
 ```
 
-If you encounter **errors with Firebase** during an Android build, try updating the `<meta-data>` tags in your [AndroidManifest.xml](./android/app/src/main/AndroidManifest.xml) as follows:
+If you encounter **errors with Firebase** (manifest merger conflicts) during an Android build: the project ships a config plugin, [`plugins/withFirebaseManifestFix.js`](./plugins/withFirebaseManifestFix.js), that applies the fix below automatically on every `npx expo prebuild`. If you removed the plugin, update the `<meta-data>` tags in your [AndroidManifest.xml](./android/app/src/main/AndroidManifest.xml) manually as follows:
 
 Replace:
 

@@ -6,17 +6,16 @@ const getSearchParams = (searchParams?: {
   available?: boolean;
 }) => {
   const expandedFilters:
-    | (IFilterParams & {statusMarker?: string})[]
-    | undefined = [];
+    (IFilterParams & {statusMarker?: string})[] | undefined = [];
 
-  // Keep real products (they have no sku) and exclude service products (which do have sku).
-  // Reference: nextjs-shop/app/api/utils/getSearchParams.ts
-  const servicesFilter = {
+  // Keep only products that have a SKU: service products (e.g. Delivery) have none.
+  // `sku nin null` stopped matching anything on the platform (every catalog came
+  // back empty); `exs` (exists) expresses the same intent and is checked live.
+  const servicesFilter: IFilterParams = {
     attributeMarker: 'sku',
-    conditionMarker: 'in',
-    conditionValue: null,
+    conditionMarker: 'exs',
     title: searchParams?.search || '',
-    isNested: false,
+    isNested: true,
   };
   expandedFilters.push(servicesFilter as any);
 

@@ -12,6 +12,7 @@ import {styleColors} from '../../../utils/consts';
 import {useAppSelector} from '../../../state/hooks';
 import BigButton from '../../shared/BigButton';
 import useSubmitReview from './useSubmitReview';
+import Toast from 'react-native-toast-message';
 import {useGetForm} from '../../../api';
 
 type Props = {
@@ -41,20 +42,34 @@ const LeaveReviewModal = ({visible, setVisible, title, product}: Props) => {
 
     try {
       setIsSubmitting(true);
-      console.log(form);
-      await submitReview({
+      // The product's module config carries `isModerate` (the Forms API does not)
+      const config =
+        product?.moduleFormConfigs?.find(
+          item => item.formIdentifier === 'comment_to_product',
+        ) || form?.moduleFormConfigs?.[0];
+      const result = await submitReview({
         rating: rating || 0,
         review,
         images,
-        config: form?.moduleFormConfigs[0],
+        config,
         productId: product?.id,
       });
       setVisible(false);
       setRating(null);
       setImages([]);
       setReview('');
-    } catch (error) {
+      Toast.show({
+        type: 'success',
+        text1: result.moderated
+          ? 'Thank you! Your review will appear after moderation.'
+          : 'Thank you for your review!',
+      });
+    } catch (error: any) {
       console.error('Failed to submit review:', error);
+      Toast.show({
+        type: 'error',
+        text1: error?.message || 'Failed to submit review',
+      });
     } finally {
       setIsSubmitting(false);
     }

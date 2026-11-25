@@ -3,8 +3,8 @@
 
 type AnyHeaders = HeadersInit | undefined;
 
-function headersToArray(headers: AnyHeaders): Array<[string, string]> {
-  const result: Array<[string, string]> = [];
+function headersToArray(headers: AnyHeaders): [string, string][] {
+  const result: [string, string][] = [];
   if (!headers) return result;
 
   if (Array.isArray(headers)) {
@@ -33,10 +33,14 @@ function shellEscape(s: string) {
   return `'${s.replace(/'/g, "'\\''")}'`;
 }
 
+const SECRET_HEADERS = ['x-app-token', 'authorization', 'x-device-metadata'];
+const SECRET_BODY_URL =
+  /users-auth-providers|\/auth\b|refresh|logout|change-password|password/i;
+
 function buildCurl(opts: {
   method: string;
   url: string;
-  headers: Array<[string, string]>;
+  headers: [string, string][];
   body?: BodyInit | null;
 }) {
   const {method, url} = opts;
@@ -51,11 +55,16 @@ function buildCurl(opts: {
   for (const [k, v] of opts.headers) {
     // Skip some noisy RN-specific headers if present
     if (k.toLowerCase() === 'accept-encoding') continue;
-    parts.push('-H', shellEscape(`${k}: ${v}`));
+    // never print credentials
+    const value = SECRET_HEADERS.includes(k.toLowerCase()) ? '<redacted>' : v;
+    parts.push('-H', shellEscape(`${k}: ${value}`));
   }
 
   const body = opts.body as any;
-  if (body != null && method.toUpperCase() !== 'GET') {
+  if (body != null && SECRET_BODY_URL.test(url)) {
+    // sign-in / sign-up / token bodies carry passwords and refresh tokens
+    parts.push('--data-raw', "'<redacted>'");
+  } else if (body != null && method.toUpperCase() !== 'GET') {
     try {
       if (typeof body === 'string') {
         parts.push('--data-raw', shellEscape(body));
@@ -81,12 +90,12 @@ export function enableFetchCurlLogger(
 ) {
   if (!enabled) return;
   if (
-    typeof global === 'undefined' ||
-    typeof (global as any).fetch !== 'function'
+    typeof globalThis === 'undefined' ||
+    typeof (globalThis as any).fetch !== 'function'
   )
     return;
 
-  const g: any = global as any;
+  const g: any = globalThis as any;
   if (g.__fetchCurlLoggerPatched) return; // idempotent
 
   const originalFetch: typeof fetch = g.fetch.bind(g);
@@ -111,7 +120,7 @@ export function enableFetchCurlLogger(
         ).toUpperCase();
 
         // Merge headers preference: init overrides request headers
-        let headerPairs: Array<[string, string]> = [];
+        let headerPairs: [string, string][] = [];
         try {
           const initHeaders = headersToArray(init?.headers);
           const reqHeaders = headersToArray((input as any)?.headers);
@@ -123,7 +132,7 @@ export function enableFetchCurlLogger(
 
         const body = init?.body ?? null; // do not attempt to read Request body streams
         const curl = buildCurl({method, url, headers: headerPairs, body});
-        // eslint-disable-next-line no-console
+
         console.log('[curl]', curl);
       }
     } catch (_e) {

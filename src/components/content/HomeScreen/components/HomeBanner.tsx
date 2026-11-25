@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import CustomImage from '../../../ui/templates/CustomImage';
+import {getImageUrl} from '../../../../utils/attributeValues';
 
 interface Props {
   banner?: IPositionBlock;
@@ -72,12 +73,12 @@ const HomeBanner: React.FC<Props> = ({
 
   return (
     <ImageBackground
-      source={{uri: banner?.attributeValues?.banner?.value[0]?.downloadLink}}>
+      source={{uri: getImageUrl(banner?.attributeValues?.banner)}}>
       <Animated.View style={[animatedColorStyle]}>
         <Screen edges={['top']}>
           <Animated.View className={'px-layout'} style={[animatedInnerStyle]}>
             <CustomImage
-              uri={banner?.attributeValues?.logo?.value[0]?.downloadLink}
+              uri={getImageUrl(banner?.attributeValues?.logo)}
               height={41}
               width={150}
             />

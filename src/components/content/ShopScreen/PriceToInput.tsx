@@ -27,7 +27,6 @@ const PriceToInput: React.FC<Props> = () => {
         attributeMarker: 'price',
         conditionMarker: 'lth',
         conditionValue: priceToSelected,
-        pageUrls: ['shop'],
       };
       dispatch(removeFilter(filter));
     }
@@ -38,7 +37,6 @@ const PriceToInput: React.FC<Props> = () => {
         attributeMarker: 'price',
         conditionMarker: 'lth',
         conditionValue: value,
-        pageUrls: ['shop'],
       };
       dispatch(addFilter(filter));
     } else {
@@ -47,7 +45,6 @@ const PriceToInput: React.FC<Props> = () => {
         attributeMarker: 'price',
         conditionMarker: 'lth',
         conditionValue: value,
-        pageUrls: ['shop'],
       };
       dispatch(removeFilter(filter));
     }

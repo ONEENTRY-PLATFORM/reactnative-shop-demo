@@ -1,3 +1,4 @@
+import type {TextInputInstance} from 'react-native';
 import React, {memo, useEffect, useRef, useState} from 'react';
 import {TextInput} from 'react-native';
 import {useAppDispatch, useAppSelector} from '../../../state/hooks';
@@ -30,7 +31,7 @@ const SignUpPasswordInput: React.FC<Props> = ({
     state => state.SignUpFieldsReducer.fields,
   );
   const [visible, setVisible] = useState<boolean>(false);
-  const passwordInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInputInstance>(null);
   const dispatch = useAppDispatch();
 
   // Effect to initialize the password fields in Redux

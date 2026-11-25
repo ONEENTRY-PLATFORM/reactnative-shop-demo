@@ -1,3 +1,4 @@
+import type {TextInputInstance} from 'react-native';
 import React, {
   forwardRef,
   FunctionComponent,
@@ -36,7 +37,7 @@ type Props = {
   onPressIcon?: () => void;
 } & TextInputProps;
 
-const AppInput = forwardRef<TextInput, Props>(
+const AppInput = forwardRef<TextInputInstance, Props>(
   (
     {
       value,

@@ -12,6 +12,7 @@ import Skeleton from '../../shared/Skeleton';
 import DatePickerModal from './DatePickerModal';
 import dayjs from 'dayjs';
 import {useLazyGetFormByMarkerQuery} from '../../../api/api/RTKApi';
+import {getAdditionalFieldValue} from '../../../utils/attributeValues';
 
 type Props = object;
 
@@ -104,14 +105,9 @@ const OrderForm: React.FC<Props> = () => {
                     setVisibleTime(true);
                     Keyboard.dismiss();
                   } else {
-                    console.log(attribute?.additionalFields);
                     Toast.show({
                       type: 'info',
-                      text1: (
-                        Object.values(
-                          attribute?.additionalFields || {},
-                        )[0] as any
-                      )?.value,
+                      text1: getAdditionalFieldValue(attribute),
                     });
                   }
                 }}
@@ -125,11 +121,7 @@ const OrderForm: React.FC<Props> = () => {
         if (attribute?.marker === 'order_address') {
           return (
             <OrderFormInput
-              placeholder={
-                (Object.values(attribute?.additionalFields || {}).find(
-                  (el: any) => el.marker === 'placeholder',
-                ) as any)?.value
-              }
+              placeholder={getAdditionalFieldValue(attribute, 'placeholder')}
               key={attribute?.marker}
               field={{...attribute}}
               value={fieldsValues?.order_address}

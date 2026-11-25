@@ -33,24 +33,32 @@ const UseWebSocket = ({products, setProducts}: Props) => {
         ws.on('notification', async res => {
           console.log(res);
 
-          if (res?.product) {
+          // SDK 1.0.186 types notification payloads as unknown
+          const resProduct = res?.product as
+            | {
+                id: number;
+                attributes?: {price?: {value?: string}};
+                status?: {identifier?: string};
+              }
+            | undefined;
+          if (resProduct) {
             const product = {
-              ...res.product,
-              attributeValues: res.product?.attributes,
+              ...resProduct,
+              attributeValues: resProduct.attributes,
             };
 
             const index = products.findIndex(
               (p: IProductsEntity) => p.id === product.id,
             );
             const newPrice = parseInt(
-              product?.attributeValues?.price?.value,
+              String(product?.attributeValues?.price?.value),
               10,
             );
 
             // Получаем старый статус продукта для сравнения
             const oldProduct = products[index];
             const oldStatus = oldProduct?.statusIdentifier;
-            const newStatus = res?.product?.status?.identifier;
+            const newStatus = resProduct.status?.identifier;
 
             // Проверяем изменение статуса доступности
             const wasOutOfStock = oldStatus === 'out_of_stock';
@@ -73,7 +81,7 @@ const UseWebSocket = ({products, setProducts}: Props) => {
               newProducts[index] = {
                 ...products[index],
                 price: newPrice,
-                statusIdentifier: newStatus,
+                statusIdentifier: newStatus as string,
               };
               return newProducts;
             });

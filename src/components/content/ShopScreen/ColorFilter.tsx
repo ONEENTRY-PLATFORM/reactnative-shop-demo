@@ -67,7 +67,6 @@ const ColorFilter: React.FC<Props> = ({color_filter_title}) => {
         attributeMarker: 'color',
         conditionMarker: 'in',
         conditionValue: colorFilters[colorFilterPrevious as any].code,
-        pageUrls: ['shop'],
         isNested: true,
       };
       dispatch(removeFilter(oldFilter));
@@ -79,7 +78,6 @@ const ColorFilter: React.FC<Props> = ({color_filter_title}) => {
         attributeMarker: 'color',
         conditionMarker: 'in',
         conditionValue: colorFilters[activeColor as any].code,
-        pageUrls: ['shop'],
         isNested: true,
       };
       dispatch(addFilter(newFilter));

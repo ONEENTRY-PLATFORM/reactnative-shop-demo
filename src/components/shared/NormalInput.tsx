@@ -1,3 +1,4 @@
+import type {TextInputInstance} from 'react-native';
 import React, {forwardRef, FunctionComponent, useState} from 'react';
 import {StyleSheet, TextInput, TextInputProps, View} from 'react-native';
 import {styleColors} from '../../utils/consts';
@@ -20,7 +21,7 @@ type Props = {
   validators?: Record<any, any>;
 } & TextInputProps;
 
-const NormalInput = forwardRef<TextInput, Props>(
+const NormalInput = forwardRef<TextInputInstance, Props>(
   (
     {
       isPassword,

@@ -2,9 +2,8 @@ import React, {memo, useEffect, useState} from 'react';
 import {FlatList, ActivityIndicator, View} from 'react-native';
 import UserReview from './UserReview';
 import Footer from '../../ui/space/Footer';
-import {defineApi} from '../../../api';
+import {defineApi, useGetForm} from '../../../api';
 import {isError} from '../../../api/api/RTKApi';
-import {useGetForm} from '../../../api';
 import {Paragraph} from '../../ui/texts/Paragraph';
 import {useRoute, RouteProp} from '@react-navigation/native';
 import {DrawerStackNavigatorParamList} from '../../../navigation/types/DrawerStackNavigatorParamList';
@@ -14,7 +13,7 @@ type Props = object;
 interface ReviewData {
   review: string;
   mark: number;
-  answers: Array<{author: string; date: string; answer: string}>;
+  answers: {author: string; date: string; answer: string}[];
   author: string;
   date: string;
   images: string[];
@@ -52,8 +51,13 @@ const ReviewsList: React.FC<Props> = () => {
       // Transform API data to ReviewData format
       const transformedReviews: ReviewData[] = result.items.map(item => {
         const ratingField = item.formData.find(f => f.marker === 'rating');
-        const reviewField = item.formData.find(f => f.marker === 'review');
-        const imagesField = item.formData.find(f => f.marker === 'images');
+        // markers of the comment_to_product form (same as the web shop)
+        const reviewField = item.formData.find(
+          f => f.marker === 'comment_description',
+        );
+        const imagesField = item.formData.find(
+          f => f.marker === 'comment_attachments',
+        );
 
         return {
           review:

@@ -22,8 +22,7 @@ const AuthMethodsList: React.FC<Props> = ({}) => {
     const googleIdentifier =
       Platform.OS === 'ios' ? 'google_ios' : 'google_web';
     return data.filter(
-      p =>
-        p?.identifier === 'email' || p?.identifier === googleIdentifier,
+      p => p?.identifier === 'email' || p?.identifier === googleIdentifier,
     );
   }, [data]);
 

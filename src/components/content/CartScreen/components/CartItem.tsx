@@ -136,7 +136,9 @@ const CartItem: React.FC<Props> = ({
           <PriceString
             price={productFromCart?.price}
             size={'md'}
-            currency={productFromCart?.attributeValues?.currency?.value as string}
+            currency={
+              productFromCart?.attributeValues?.currency?.value as string
+            }
             sale={productFromCart?.attributeValues?.sale?.value as number}
           />
         </View>

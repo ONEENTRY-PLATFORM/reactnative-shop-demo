@@ -14,6 +14,7 @@ import {
   addToCart,
   toggleFavorite,
 } from '../../../state/reducers/userStateSlice';
+import {getFirstItem} from '../../../utils/attributeValues';
 
 interface Props {
   product: IProductsEntity;
@@ -52,8 +53,8 @@ const FavoritesItem: React.FC<Props> = ({
       <View className={'w-[26px] h-[26px] absolute top-5 left-2.5 z-10'}>
         <Image
           source={{
-            uri: (product.attributeValues?.stickers?.value as any)?.extended
-              ?.value?.downloadLink,
+            uri: getFirstItem(product.attributeValues?.stickers?.value)
+              ?.extended?.value?.downloadLink,
           }}
           className={'w-full h-full object-contain'}
         />

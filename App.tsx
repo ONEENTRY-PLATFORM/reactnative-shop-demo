@@ -30,7 +30,8 @@ configureReanimatedLogger({
 });
 
 // Enable curl logging for requests to OneEntry base URL
-enableFetchCurlLogger(PROJECT_URL);
+// debug builds only: release builds must not write requests to the device log
+enableFetchCurlLogger(PROJECT_URL, __DEV__);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,7 +56,7 @@ GoogleSignin.configure({
 const store = setupStore();
 
 // Main App component
-function App(): JSX.Element {
+function App(): React.JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Provide Redux state to the app */}

@@ -3,15 +3,24 @@
     "preview": {
       "android": {
         "buildType": "apk"
-      }
+      },
+      "environment": "preview",
+      "node": "24.19.0"
     },
     "dev": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "environment": "development",
+      "node": "24.19.0"
     },
-    "production": {}
+    "production": {
+      "environment": "production",
+      "node": "24.19.0",
+      "autoIncrement": false
+    }
   },
   "cli": {
-    "version": ">= 0.52.0"
+    "version": ">= 16.0.0",
+    "appVersionSource": "local"
   }
 }

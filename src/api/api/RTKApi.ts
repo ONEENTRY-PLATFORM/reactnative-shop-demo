@@ -5,7 +5,10 @@ import {
   IPositionBlock,
 } from 'oneentry/dist/pages/pagesInterfaces';
 import {IAuthProvidersEntity} from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import {IFormAttribute, IFormsEntity} from 'oneentry/dist/forms/formsInterfaces';
+import {
+  IFormAttribute,
+  IFormsEntity,
+} from 'oneentry/dist/forms/formsInterfaces';
 import {IUserEntity} from 'oneentry/dist/users/usersInterfaces';
 import {
   IAccountsEntity,
@@ -107,7 +110,8 @@ export const RTKApi = createApi({
     getOrderStorageByMarker: build.query<IOrdersEntity, {marker: string}>({
       queryFn: async ({marker}) => {
         try {
-          const result = await defineApi.Orders.getOrdersStorageByMarker(marker);
+          const result =
+            await defineApi.Orders.getOrdersStorageByMarker(marker);
 
           if (isError(result)) {
             throw new Error(result?.message);
@@ -310,18 +314,26 @@ export const RTKApi = createApi({
             return {data: {limit: 2, columns: 2}};
           }
 
-          const result = await defineApi.Pages.getConfigPageByUrl(pageUrl);
+          // SDK 1.0.162 removed getConfigPageByUrl: catalog output settings
+          // now come in the `config` field of the page entity.
+          const result = await defineApi.Pages.getPageByUrl(pageUrl);
 
           if (isError(result)) {
             throw new Error(result?.message);
           }
 
+          if (!result.config?.productsPerRow) {
+            // same defaults as useGetProducts uses when there is no config
+            return {data: {limit: 10, columns: 2}};
+          }
+
+          const productsPerRow = result.config.productsPerRow;
+          const rowsPerPage = result.config?.rowsPerPage ?? 0;
+
           return {
             data: {
-              limit:
-                (result.productsPerRow || 2) *
-                (result.rowsPerPage <= 1 ? 2 : result.rowsPerPage),
-              columns: result?.productsPerRow || 2,
+              limit: productsPerRow * (rowsPerPage <= 1 ? 2 : rowsPerPage),
+              columns: productsPerRow,
             },
           };
         } catch (e: any) {

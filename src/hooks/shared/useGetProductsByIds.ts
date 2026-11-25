@@ -11,6 +11,8 @@ const UseGetProductsByIds = ({ids}: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
   const getProductsByIds = async () => {
     if (!ids?.length) {
+      // the last item was removed: drop the stale product list
+      setProducts([]);
       return;
     }
     setLoading(true);

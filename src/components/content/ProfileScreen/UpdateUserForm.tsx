@@ -1,10 +1,11 @@
+import type {TextInputInstance} from 'react-native';
 import React, {Dispatch, memo, useEffect, useRef, useState} from 'react';
 import {Alert, TextInput, View} from 'react-native';
 import {Button} from '../../ui/buttons/Button';
 import LogOutButton from './LogOutButton';
 import {useAppSelector} from '../../../state/hooks';
 import {useAuth} from '../../../state/contexts/AuthContext';
-import {IAuthFormData} from 'oneentry/dist/auth-provider/authProvidersInterfaces';
+import type {FormDataType} from 'oneentry/dist/forms-data/formsDataInterfaces';
 import {defineApi} from '../../../api';
 import NormalInput from '../../shared/NormalInput';
 import {InputValue} from '../../ui/inputs/AppInput';
@@ -32,9 +33,9 @@ const UpdateUserForm: React.FC<Props> = ({editing, setEditing}) => {
   const [phoneValue, setPhoneValue] = useState<string>('');
   const [addressValue, setAddressValue] = useState<string>('');
   const {user, authenticate} = useAuth();
-  const usernameRef = useRef<TextInput>(null);
-  const phoneRef = useRef<TextInput>(null);
-  const addressRef = useRef<TextInput>(null);
+  const usernameRef = useRef<TextInputInstance>(null);
+  const phoneRef = useRef<TextInputInstance>(null);
+  const addressRef = useRef<TextInputInstance>(null);
 
   /**
    * Handles updating user data.
@@ -42,8 +43,8 @@ const UpdateUserForm: React.FC<Props> = ({editing, setEditing}) => {
    */
   const onUpdateUserData = async () => {
     try {
-      // Transform input data into IAuthFormData format
-      const formData: IAuthFormData[] = [];
+      // Transform input data into FormDataType format
+      const formData: FormDataType[] = [];
 
       if (nameValue) {
         formData.push({

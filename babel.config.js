@@ -17,6 +17,6 @@ module.exports = {
         version: '2023-07',
       },
     ],
-    'react-native-worklets/plugin',
+    // react-native-worklets/plugin (Reanimated 4) is added automatically by babel-preset-expo
   ],
 };

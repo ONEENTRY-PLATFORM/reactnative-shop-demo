@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
 import {useDrawerProgress} from '@react-navigation/drawer';
+import {useIsFocused} from '@react-navigation/native';
 import X from '../../assets/icons/x.svg';
 
 interface Props {
@@ -16,6 +17,10 @@ interface Props {
 
 const DrawerScreenWrapper: React.FC<Props> = ({children}) => {
   const progress = useDrawerProgress();
+  // React Navigation 7 removed the `unmountOnBlur` screen option. Screens relied
+  // on it (e.g. the payment WebView lives in a Modal that has to go away after
+  // navigating to the result screen), so a blurred screen renders nothing.
+  const isFocused = useIsFocused();
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -48,7 +53,7 @@ const DrawerScreenWrapper: React.FC<Props> = ({children}) => {
           </TouchableOpacity>
         </View>
       </Animated.View>
-      {children}
+      {isFocused ? children : null}
     </Animated.View>
   );
 };

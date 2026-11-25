@@ -50,7 +50,10 @@ const CreateOrderButton: React.FC<Props> = ({
     }
 
     if ('paymentUrl' in session && session.paymentUrl) {
-      navigate('payment_method', {orderId: session.id, paymentUrl: session.paymentUrl});
+      navigate('payment_method', {
+        orderId: session.id,
+        paymentUrl: session.paymentUrl,
+      });
     }
   };
 

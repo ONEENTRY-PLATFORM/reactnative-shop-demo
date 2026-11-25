@@ -6,6 +6,7 @@ import FlexLoader from '../../ui/space/FlexLoader';
 import SignUpInput from './SignUpInput';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import SignUpPasswordInput from './SignUpPasswordInput';
+import {getAdditionalFieldValue} from '../../../utils/attributeValues';
 
 type Props = {};
 
@@ -59,13 +60,7 @@ const SignUpForm: React.FC<Props> = ({}): React.ReactElement => {
                 title={item?.localizeInfos?.title}
                 marker={item?.marker}
                 key={item?.marker}
-                requiredError={
-                  (
-                    Object.values(item?.additionalFields || {}).find(
-                      (field: any) => field?.marker === 'error_required',
-                    ) as any
-                  )?.value
-                }
+                requiredError={getAdditionalFieldValue(item, 'error_required')}
               />
             );
           }

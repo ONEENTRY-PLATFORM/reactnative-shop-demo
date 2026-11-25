@@ -1,3 +1,4 @@
+import type {TextInputInstance} from 'react-native';
 import React, {useRef, useState} from 'react';
 import {TextInput, TouchableOpacity, View} from 'react-native';
 import {AuthStackNavigatorParamList} from '../../../navigation';
@@ -33,7 +34,7 @@ const SignInForm: React.FC<Props> = ({}): React.ReactElement => {
   const [login, setLogin] = useState<InputValue>({value: '', valid: true});
 
   // Reference to the password input field
-  const passwordInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInputInstance>(null);
 
   const {params} =
     useRoute<RouteProp<AuthStackNavigatorParamList, 'auth_sign_in'>>();

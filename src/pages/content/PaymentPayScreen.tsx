@@ -79,7 +79,9 @@ const PaymentPayScreen: React.FC<Props> = () => {
         (status === undefined && assumeSuccessFromUrl);
 
       navigate('message', {
-        message: succeeded ? successful_payment_text : unsuccessful_payment_text,
+        message: succeeded
+          ? successful_payment_text
+          : unsuccessful_payment_text,
       });
       // @ts-ignore route params typing
       navigation.setParams({orderId: undefined});
@@ -102,8 +104,7 @@ const PaymentPayScreen: React.FC<Props> = () => {
       // Stripe redirect usually carries success/cancel markers in the URL. Use
       // them as a hint; final decision still comes from the session status.
       const looksLikeSuccess =
-        /success|complete|paid/i.test(req.url) &&
-        !/cancel|fail/i.test(req.url);
+        /success|complete|paid/i.test(req.url) && !/cancel|fail/i.test(req.url);
       finish(looksLikeSuccess);
       return false;
     },

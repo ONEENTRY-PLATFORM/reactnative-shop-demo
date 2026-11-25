@@ -1,6 +1,10 @@
 import {Alert, Platform} from 'react-native';
 import * as Notifications from 'expo-notifications';
-import messaging from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  getToken,
+  setAPNSToken,
+} from '@react-native-firebase/messaging';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -57,12 +61,14 @@ export async function registerForPushNotificationsAsync(): Promise<
      * This ensures compatibility with Firebase for sending notifications.
      */
     if (Platform.OS === 'ios') {
-      await messaging().setAPNSToken(token);
-      // await messaging().registerDeviceForRemoteMessages();
-      token = await messaging().getToken();
+      const messaging = getMessaging();
+      await setAPNSToken(messaging, token);
+      token = await getToken(messaging);
     }
   } catch (e) {
-    token = `${e}`;
+    // Do not send an error message to the server as if it were a token
+    console.log('push token error', e);
+    return;
   }
 
   return token;

@@ -1,3 +1,4 @@
+import type {TextInputInstance} from 'react-native';
 import React, {Dispatch, useEffect, useRef, useState} from 'react';
 import {
   Alert,
@@ -37,7 +38,7 @@ const OTPInput: React.FC<Props> = ({
 }: Props): React.ReactElement => {
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const {params} = useRoute<AuthActivateRouteProp>();
-  const ref = useRef<TextInput>(null);
+  const ref = useRef<TextInputInstance>(null);
   const {enter_otp_code, receive_otp_text, resend_text} = useAppSelector(
     state => state.systemContentReducer.content,
   );

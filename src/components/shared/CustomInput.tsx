@@ -1,3 +1,4 @@
+import type {TextInputInstance} from 'react-native';
 import React, {forwardRef, FunctionComponent, useState} from 'react';
 import {
   TextInput,
@@ -24,7 +25,7 @@ type Props = {
   type?: 'normal' | 'compact';
 } & Omit<TextInputProps, 'value'>;
 
-const CustomInput = forwardRef<TextInput, Props>(
+const CustomInput = forwardRef<TextInputInstance, Props>(
   (
     {
       title,

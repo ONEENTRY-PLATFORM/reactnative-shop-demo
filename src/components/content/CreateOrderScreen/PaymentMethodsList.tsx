@@ -3,7 +3,7 @@ import {FlatList, View} from 'react-native';
 import {
   useGetAccountsQuery,
   useGetOrderStorageByMarkerQuery,
-} from '../../../api';
+} from '../../../api/api/RTKApi';
 import PaymentMethod from './PaymentMethod';
 import ErrorBlock from '../../shared/ErrorBlock';
 

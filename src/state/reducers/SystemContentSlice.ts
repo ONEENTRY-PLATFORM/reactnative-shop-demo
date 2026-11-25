@@ -5,6 +5,7 @@ import {
 } from 'oneentry/dist/attribute-sets/attributeSetsInterfaces';
 import {IBlockEntity} from 'oneentry/dist/blocks/blocksInterfaces';
 import {IMenusPages} from 'oneentry/dist/menus/menusInterfaces';
+import {getImageUrl} from '../../utils/attributeValues';
 
 type ButtonsType = {
   addToCart: string;
@@ -140,8 +141,7 @@ export const systemContentSlice = createSlice({
           block?.attributeValues?.search_history_title?.value,
         category_product_plug:
           block?.attributeValues?.category_product_plug?.value,
-        contact_us_logo:
-          block?.attributeValues?.contact_us_logo?.value[0]?.downloadLink,
+        contact_us_logo: getImageUrl(block?.attributeValues?.contact_us_logo),
         go_to_pay_placeholder:
           block?.attributeValues?.go_to_pay_placeholder?.value,
         units_plug: block?.attributeValues?.units_plug?.value,
@@ -163,7 +163,7 @@ export const systemContentSlice = createSlice({
           block?.attributeValues?.order_info_comment_placeholder?.value,
         order_info_address_placeholder:
           block?.attributeValues?.order_info_address_placeholder?.value,
-        round_logo: block?.attributeValues?.round_logo?.value[0]?.downloadLink,
+        round_logo: getImageUrl(block?.attributeValues?.round_logo),
         log_out_button: block?.attributeValues?.log_out_button?.value,
         unsuccessful_payment_text:
           block?.attributeValues?.unsuccessful_payment_text?.value,
@@ -206,13 +206,14 @@ export const systemContentSlice = createSlice({
     addStaticContent(state, action: PayloadAction<any[]>) {
       const attributes = action?.payload?.reduce(
         (obj: Record<string, any>, item) => {
-          obj[item.marker] = item?.localizeInfos?.value;
+          // the text of a static_content attribute comes in `initialValue`
+          // (localized by langCode); `localizeInfos` holds only its title
+          obj[item.marker] = item?.localizeInfos?.value ?? item?.initialValue;
           return obj;
         },
         {},
       );
 
-      console.log(attributes);
       state.content = {
         ...state.content,
         ...attributes,

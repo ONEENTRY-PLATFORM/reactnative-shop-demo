@@ -54,12 +54,17 @@ export const useGetForm = ({marker}: UseGetFormProps) => {
                 return obj;
               }
 
-              const requiredValidator = currentValue?.validators
-                ?.requiredValidator as {strict?: boolean} | undefined;
+              // SDK 1.0.186: requiredValidator is either {strict} or a plain boolean
+              const requiredValidator =
+                currentValue?.validators?.requiredValidator;
               obj[currentValue.marker] = {
                 value: '',
                 valid: false,
-                required: Boolean(requiredValidator?.strict),
+                required:
+                  typeof requiredValidator === 'boolean'
+                    ? requiredValidator
+                    : !!(requiredValidator as {strict?: boolean} | undefined)
+                        ?.strict,
               };
               return obj;
             },

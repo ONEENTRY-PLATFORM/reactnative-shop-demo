@@ -24,6 +24,7 @@ DerivedData
 
 # env
 .env
+.env.local
 
 # Android/IntelliJ
 #

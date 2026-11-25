@@ -282,6 +282,8 @@ export const signInUser = async (
       ],
     };
     const provider = 'email';
+    // the issued refresh token is bound to this device metadata
+    await initDeviceMetadata();
     const result = await defineApi.AuthProvider.auth(provider, preparedData);
 
     if ((result as IError)?.statusCode >= 400) {
