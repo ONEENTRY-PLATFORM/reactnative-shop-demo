@@ -93,9 +93,13 @@ const OTPButton: React.FC<Props> = memo(({setValue, value}) => {
   };
 
   useEffect(() => {
-    if (user && screen) {
-      navigate(screen);
-      dispatch(resetScreen());
+    if (user) {
+      // the drawer stays below the auth stack: navigating to it closes the
+      // auth screens and opens the screen that asked for sign-in
+      navigate(screen || 'home');
+      if (screen) {
+        dispatch(resetScreen());
+      }
     }
   }, [user]);
 

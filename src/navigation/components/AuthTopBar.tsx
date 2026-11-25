@@ -4,7 +4,7 @@ import GoBackButton from '../../components/ui/buttons/GoBackButton';
 import {Paragraph} from '../../components/ui/texts/Paragraph';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useRoute} from '@react-navigation/native';
-import {useAppNavigation} from '../types/types';
+import {navigate} from '../utils/NavigatonRef';
 
 type Props = {
   title?: string;
@@ -26,10 +26,7 @@ const getPreviousRouteName = (navigation: any) => {
 const AuthTopBar: React.FC<Props> = ({title}) => {
   const {top} = useSafeAreaInsets();
   const route = useRoute();
-  const navigation = useAppNavigation();
   const marginTop = {paddingTop: top + (top < 5 ? 10 : 0)};
-
-  console.log(route);
 
   return (
     <View
@@ -42,7 +39,8 @@ const AuthTopBar: React.FC<Props> = ({title}) => {
           <GoBackButton
             onPress={
               route.name === 'auth_home'
-                ? () => navigation.navigate('Drawer')
+                ? // the screen below may require sign-in: go home instead
+                  () => navigate('home')
                 : undefined
             }
             className={'bg-lightGray'}
