@@ -14,7 +14,7 @@ import {useLazyGetPaymentSessionByIdQuery} from '../../api/api/RTKApi';
 
 type Props = object;
 
-const STRIPE_HOSTS = ['stripe.com', 'stripe.network'];
+const STRIPE_HOSTS = ['stripe.com', 'stripe.network', 'stripecdn.com'];
 
 const isStripeUrl = (url: string): boolean => {
   if (!url) return false;
@@ -98,8 +98,11 @@ const PaymentPayScreen: React.FC<Props> = () => {
   // Preferred hook: cancel navigation to non-Stripe URLs before the WebView
   // renders someone else's page.
   const onShouldStartLoadWithRequest = useCallback(
-    (req: {url: string}) => {
+    (req: {url: string; isTopFrame?: boolean}) => {
       if (handledRef.current) return false;
+      // Stripe Checkout embeds iframes from other hosts (Google Pay, hCaptcha,
+      // stripecdn.com): only a top-level navigation leaves the checkout
+      if (req.isTopFrame === false) return true;
       if (isStripeUrl(req.url)) return true;
       // Stripe redirect usually carries success/cancel markers in the URL. Use
       // them as a hint; final decision still comes from the session status.
